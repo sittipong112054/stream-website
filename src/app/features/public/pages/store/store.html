@@ -1,0 +1,28 @@
+<div class="store">
+    <div class="hero">
+        <img [src]="bannerUrl" alt="season sale banner" />
+    </div>
+
+    <section class="grid">
+        <article class="card" *ngFor="let g of filtered()" [routerLink]="['/games', g.id]">
+            <div class="thumb">
+                <img [src]="g.cover" [alt]="g.title" />
+            </div>
+
+            <h3 class="title">{{ g.title }}</h3>
+
+            <div class="meta">
+                <div class="left">
+                    <span *ngIf="g.rank" class="pill pill-rank"># {{ g.rank }}</span>
+                    <span class="genre">{{ g.genre }}</span>
+                </div>
+
+                <div class="right">
+                    <span class="pill pill-price">฿ {{ g.price | number:'1.2-2' }}</span>
+                    <!-- หรือใช้ currency pipe: {{ g.price | currency:'THB':'symbol-narrow':'1.0-0' }} -->
+                </div>
+            </div>
+        </article>
+    </section>
+
+</div>

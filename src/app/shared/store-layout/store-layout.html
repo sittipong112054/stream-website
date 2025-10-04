@@ -1,0 +1,7 @@
+<app-subheader [cartCount]="cartCount" [categories]="cats" (categoryChange)="onCategory($event)"
+    (searchChange)="onSearch($event)">
+</app-subheader>
+
+<section class="container">
+    <router-outlet></router-outlet>
+</section>

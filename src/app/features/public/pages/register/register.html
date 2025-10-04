@@ -1,0 +1,60 @@
+<div class="screen">
+    <div class="brand">
+        <img src="assets/logo.png" alt="Stream Logo" class="logo" />
+        <h1>STREAM</h1>
+    </div>
+
+    <div class="card">
+        <div class="grid">
+            <div class="left">
+                <label class="avatar-box">
+                    <img *ngIf="avatarPreview(); else placeholder" [src]="avatarPreview()!" alt="avatar preview" />
+                    <ng-template #placeholder>
+                        <div class="placeholder">โปรไฟล์</div>
+                    </ng-template>
+
+                    <input type="file" accept="image/*" (change)="onFileChange($event)" />
+                </label>
+                <div class="avatar-hint">โปรไฟล์</div>
+            </div>
+
+            <div class="right">
+                <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                    <label for="username">ชื่อผู้ใช้</label>
+                    <input id="username" type="text" placeholder="ตั้งชื่อผู้ใช้" formControlName="username"
+                        [class.invalid]="f.username.touched && f.username.invalid" />
+
+                    <span class="hint" *ngIf="f.username.touched && f.username.hasError('required')">
+                        กรุณากรอกชื่อผู้ใช้
+                    </span>
+                    <span class="hint" *ngIf="f.username.touched && f.username.hasError('minlength')">
+                        อย่างน้อย 3 ตัวอักษร
+                    </span>
+
+
+                    <label for="email">อีเมล</label>
+                    <input id="email" type="email" placeholder="name@example.com" formControlName="email"
+                        [class.invalid]="f.email.touched && f.email.invalid" autocomplete="email" />
+
+                    <div class="hint" *ngIf="f.email.touched && f.email.hasError('required')">กรุณากรอกอีเมล</div>
+                    <div class="hint" *ngIf="f.email.touched && f.email.hasError('email')">รูปแบบอีเมลไม่ถูกต้อง</div>
+
+                    <label for="password">รหัสผ่าน</label>
+                    <input id="password" type="password" placeholder="••••••••" formControlName="password"
+                        [class.invalid]="f.password.touched && f.password.invalid" autocomplete="new-password" />
+
+                    <div class="hint" *ngIf="f.password.touched && f.password.hasError('required')">กรุณากรอกรหัสผ่าน
+                    </div>
+                    <div class="hint" *ngIf="f.password.touched && f.password.hasError('minlength')">อย่างน้อย 4
+                        ตัวอักษร</div>
+
+                    <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+                    <div class="actions">
+                        <button type="submit" [disabled]="loading()">ลงทะเบียน</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="subbar">
+    <div class="wrap">
+        <!-- หมวดหมู่ -->
+        <div class="category">
+            <button class="cat-btn" type="button">
+                <span class="cat-label">หมวดหมู่</span>
+                <span class="caret">▾</span>
+            </button>
+            <ul class="cat-menu">
+                <li *ngFor="let c of categories" [class.active]="c === selectedCategory" (click)="onPick(c)">{{ c }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- กล่องค้นหา -->
+        <div class="search-wrap">
+            <input type="search" placeholder="Search..." [(ngModel)]="q" (ngModelChange)="searchChange.emit($event)" />
+            <span class="icon" aria-hidden="true">🔍</span>
+        </div>
+
+        <!-- รถเข็น -->
+        <a class="cart" routerLink="/cart" (click)="cartClick.emit()">
+            รถเข็น <span *ngIf="cartCount>0" class="badge">{{ cartCount }}</span>
+        </a>
+    </div>
+</div>

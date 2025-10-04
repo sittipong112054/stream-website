@@ -1,0 +1,153 @@
+/* แถบย่อยแบบ sticky ใต้ Header หลัก */
+.subbar {
+    position: sticky;
+    top: 48px;
+    z-index: 90;
+    background: #1f2940;
+    /* โทนใกล้ภาพ */
+    border-bottom: 1px solid #2a3550;
+}
+
+.wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 12px;
+}
+
+/* หมวดหมู่ */
+.category {
+    position: relative;
+}
+
+.cat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: #eaf1ff;
+    border: 1px solid #33415e;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.cat-btn:hover {
+    background: rgba(255, 255, 255, .03);
+}
+
+.cat-label {
+    font-size: 14px;
+}
+
+.caret {
+    opacity: .7;
+}
+
+.cat-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #142033;
+    border: 1px solid #33415e;
+    border-radius: 10px;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    min-width: 160px;
+}
+
+.category:hover .cat-menu {
+    display: block;
+}
+
+.cat-menu li {
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #d7e4ff;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.cat-menu li:hover {
+    background: #1c2a45;
+}
+
+.cat-menu li.active {
+    background: #23365a;
+    color: #8fc3ff;
+}
+
+/* ค้นหา */
+.search-wrap {
+    position: relative;
+    flex: 1 1 auto;
+    background: #1a2439;
+    border: 1px solid #2a3550;
+    border-radius: 10px;
+}
+
+.search-wrap input {
+    width: 100%;
+    background: transparent;
+    color: #cfe1ff;
+    border: 0;
+    outline: none;
+    padding: 10px 36px 10px 14px;
+    font-size: 14px;
+}
+
+.icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .45;
+}
+
+/* รถเข็น */
+.cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 800;
+    background: #2ea4ff;
+    border: 1px solid #1c7ed6;
+    border-radius: 10px;
+    padding: 8px 14px;
+}
+
+.cart:hover {
+    filter: brightness(1.05);
+}
+
+.badge {
+    background: rgba(0, 0, 0, .2);
+    border: 1px solid rgba(255, 255, 255, .25);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+/* หน้าจอแคบ */
+@media (max-width: 640px) {
+    .wrap {
+        gap: 10px;
+    }
+
+    .cat-btn {
+        padding: 6px 10px;
+    }
+
+    .cart {
+        padding: 6px 10px;
+    }
+}

@@ -1,0 +1,36 @@
+<header class="topbar">
+    <div class="wrap">
+        <div class="brand">
+            <img src="assets/logo.png" />
+            <span>STREAM</span>
+        </div>
+
+        <nav *ngIf="(auth.loggedIn$ | async) && (auth.role$ | async) === 'USER'" class="nav">
+            <a routerLink="/store" routerLinkActive="active">STORE</a>
+            <a routerLink="/user/library" routerLinkActive="active">LIBRARY</a>
+            <a routerLink="/user/profile" routerLinkActive="active">NAMEPROFILE</a>
+        </nav>
+
+        <nav *ngIf="(auth.loggedIn$ | async) && (auth.role$ | async) === 'ADMIN'" class="nav">
+            <a routerLink="/admin" routerLinkActive="active">DASHBOARD</a>
+            <a routerLink="/admin/games" routerLinkActive="active">GAMES</a>
+            <a routerLink="/admin/coupons" routerLinkActive="active">COUPONS</a>
+            <a routerLink="/admin/transactions" routerLinkActive="active">TRANSACTIONS</a>
+            <a routerLink="/admin/ranking" routerLinkActive="active">RANKING</a>
+        </nav>
+
+        <nav *ngIf="!(auth.loggedIn$ | async)" class="nav">
+            <a routerLink="/store" routerLinkActive="active">STORE</a>
+            <a routerLink="/login">LOGIN</a>
+            <a routerLink="/register">REGISTER</a>
+        </nav>
+
+        <div class="profile" *ngIf="auth.loggedIn$ | async">
+            <img class="avatar" [src]="(user.profile$ | async)?.avatarUrl || 'assets/avatar-default.png'"
+                alt="avatar" />
+            <span class="name">{{ (user.profile$ | async)?.displayName || 'NameProfile' }}</span>
+            <span class="wallet">{{ (user.profile$ | async)?.walletBalance ?? 0 | number:'1.0-0' }}฿</span>
+            <button class="logout" (click)="logout()">ออก</button>
+        </div>
+    </div>
+</header>

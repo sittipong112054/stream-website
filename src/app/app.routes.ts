@@ -1,3 +1,79 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+
+import { Login } from './features/public/pages/login/login';
+import { Register } from './features/public/pages/register/register';
+import { Store } from './features/public/pages/store/store';
+import { GameDetail } from './features/public/pages/game-detail/game-detail';
+import { Cart } from './features/public/pages/cart/cart';
+
+import { Library } from './features/user/pages/library/library';
+import { Profile } from './features/user/pages/profile/profile';
+import { CheckoutSuccess } from './features/user/pages/checkout-success/checkout-success';
+
+import { Dashboard } from './features/admin/pages/dashboard/dashboard';
+import { Games } from './features/admin/pages/games/games';
+import { Coupons } from './features/admin/pages/coupons/coupons';
+import { Transactions } from './features/admin/pages/transactions/transactions';
+import { Ranking } from './features/admin/pages/ranking/ranking';
+
+import { NotFound } from './features/public/pages/not-found/not-found';
+import { authGuard, loginGuard } from './core/guards/auth-guard';
+import { PublicLayout } from './shared/public-layout/public-layout';
+import { StoreLayout } from './shared/store-layout/store-layout';
+
+export const routes: Routes = [
+    {
+        path: '',
+        component: PublicLayout, // << Header รวมอยู่ที่นี่
+        children: [
+            // --- Store shell (มี subheader ของร้าน) ---
+            {
+                path: '',
+                component: StoreLayout,
+                children: [
+                    { path: '', redirectTo: 'store', pathMatch: 'full' },
+                    { path: 'store', component: Store },
+                    { path: 'games/:id', component: GameDetail },
+                    { path: 'cart', component: Cart },
+                ]
+            },
+
+            // --- Auth ---
+            { path: 'login', component: Login, canActivate: [loginGuard] },
+            { path: 'register', component: Register, canActivate: [loginGuard] },
+
+            // --- User (ต้องล็อกอิน) ---
+            {
+                path: 'user',
+                canActivate: [authGuard],
+                data: { roles: ['USER'] },
+                children: [
+                    { path: '', redirectTo: 'library', pathMatch: 'full' },
+                    { path: 'library', component: Library },
+                    { path: 'profile', component: Profile },
+                    { path: 'checkout/success', component: CheckoutSuccess },
+                ]
+            },
+
+            // --- Admin (ต้องล็อกอิน) ---
+            {
+                path: 'admin',
+                canActivate: [authGuard],
+                data: { roles: ['ADMIN'] },
+                children: [
+                    { path: '', component: Dashboard },
+                    { path: 'games', component: Games },
+                    { path: 'coupons', component: Coupons },
+                    { path: 'transactions', component: Transactions },
+                    { path: 'ranking', component: Ranking },
+                ]
+            },
+
+            // --- 404 ---
+            { path: 'not-found', component: NotFound },
+        ]
+    },
+
+    { path: '**', redirectTo: 'not-found' },
+];

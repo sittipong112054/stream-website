@@ -57,8 +57,10 @@
         <div class="right">
             <span *ngIf="game().discount" class="pill-discount">-{{ game().discount }}%</span>
             <div class="price-block">
-                <span class="strike">฿ {{ game().price | number:'1.2-2' }}</span>
-                <span class="pill-price">฿ {{ finalPrice() | number:'1.2-2' }}</span>
+                <span class="strike" *ngIf="game().discount">฿ {{ game().price | number:'1.2-2' }}</span>
+                <span class="pill-price"
+                    [ngClass]="{ 'is-discount': !!game().discount, 'is-normal': !game().discount }">฿ {{ finalPrice() |
+                    number:'1.2-2' }}</span>
             </div>
             <button class="add" (click)="addToCart()">Add to Cart</button>
         </div>

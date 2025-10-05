@@ -52,8 +52,8 @@ export class GameDetail {
     developer: 'FromSoftware',
     publisher: 'Bandai Namco',
     releaseDate: '2022-02-25',
-    rating: 94.7,
-    price: 1790,
+    rating: 1,
+    price: 1599.99,
     discount: 34,
   });
 
@@ -74,7 +74,10 @@ export class GameDetail {
   // ราคาหลังส่วนลด
   finalPrice = computed(() => {
     const g = this.game();
-    return g.discount ? Math.round(g.price * (100 - g.discount) / 100) : g.price;
+    return g.discount
+      ? (g.price * (100 - g.discount) / 100).toFixed(2)
+      : g.price.toFixed(2);
+
   });
 
   addToCart() {

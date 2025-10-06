@@ -1,16 +1,20 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Constants } from '../../config/constants';
 
-// src/app/core/services/user.ts
+
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private BASE = 'http://localhost:3002/users';
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private constants: Constants 
+  ) {}
 
+ 
   getMe() {
     return this.http.get<{ ok: boolean; user: any }>(
-      `${this.BASE}/me`,
-      { withCredentials: true } // ← สำคัญมาก
+      `${this.constants.API_URL}/users/me`,
+      { withCredentials: true }
     );
   }
 
@@ -18,17 +22,25 @@ export class UserService {
     const fd = new FormData();
     fd.append('avatar', file);
     return this.http.post<{ ok: boolean; avatarUrl: string }>(
-      `${this.BASE}/me/avatar`,
+      `${this.constants.API_URL}/users/me/avatar`,
       fd,
-      { withCredentials: true } // ← สำคัญ
+      { withCredentials: true }
     );
   }
 
-  updateMe(body: { username?: string; email?: string }) {
-    return this.http.put(`${this.BASE}/me`, body, { withCredentials: true });
+  updateMe(payload: { username?: string; email?: string }) {
+    return this.http.put(
+      `${this.constants.API_URL}/users/me`,
+      payload,
+      { withCredentials: true }
+    );
   }
 
+
   deleteMyAvatar() {
-    return this.http.delete(`${this.BASE}/me/avatar`, { withCredentials: true });
+    return this.http.delete(
+      `${this.constants.API_URL}/users/me/avatar`,
+      { withCredentials: true }
+    );
   }
 }

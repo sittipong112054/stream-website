@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, tap, catchError, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UserStore, UserProfile } from '../../stores/user.store';
+import { Constants } from '../../config/constants';
 
 export type Role = 'USER' | 'ADMIN';
 
@@ -9,7 +10,8 @@ export type Role = 'USER' | 'ADMIN';
 export class AuthService {
   private TOKEN_KEY = 'auth_token';
   private ROLE_KEY = 'auth_role';
-  private API_URL = 'http://localhost:3002/auth';
+
+
 
   loggedIn$ = new BehaviorSubject<boolean>(
     !!localStorage.getItem(this.TOKEN_KEY)
@@ -18,7 +20,11 @@ export class AuthService {
     (localStorage.getItem(this.ROLE_KEY) as Role) || null
   );
 
-  constructor(private http: HttpClient, private userStore: UserStore) {}
+  constructor(
+    private http: HttpClient,
+    private userStore: UserStore,
+    private constants: Constants
+  ) {}
 
   registerWithAvatar$(payload: {
     username: string;
@@ -32,8 +38,10 @@ export class AuthService {
     fd.append('password', payload.password);
     if (payload.avatar) fd.append('avatar', payload.avatar);
 
-    return this.http.post(`${this.API_URL}/register`, fd, {
+
+    return this.http.post(`${this.constants.API_URL}/auth/register`, fd, {
       withCredentials: true,
+      
     });
   }
   isLoggedIn(): boolean {
@@ -47,7 +55,7 @@ export class AuthService {
   login$(usernameOrEmail: string, password: string) {
     return this.http
       .post<any>(
-        `${this.API_URL}/login`,
+        `${this.constants.API_URL}/auth/login`,
         { usernameOrEmail, password },
         { withCredentials: true }
       )
@@ -66,7 +74,7 @@ export class AuthService {
   logout$() {
     const token = localStorage.getItem(this.TOKEN_KEY);
     return this.http
-      .post(`${this.API_URL}/logout`, { token }, { withCredentials: true })
+      .post(`${this.constants.API_URL}/auth/logout`, { token }, { withCredentials: true })
       .pipe(
         tap(() => {
           localStorage.removeItem(this.TOKEN_KEY);
@@ -80,9 +88,8 @@ export class AuthService {
 
   /** โหลดโปรไฟล์ */
   me$() {
-    const API_BASE = 'http://localhost:3002';
     return this.http
-      .get<any>(`${this.API_URL}/me`, { withCredentials: true })
+      .get<any>(`${this.constants.API_URL}/auth/me`, { withCredentials: true })
       .pipe(
         
         map((res) => {

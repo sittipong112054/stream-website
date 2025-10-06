@@ -1,96 +1,129 @@
-.edit-profile {
-  max-width: 500px;
-  margin: 30px auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+.screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
   padding: 24px;
+  background: #0f1020;
+  color: #fff;
+}
 
-  h2 {
-    font-weight: 600;
-    margin-bottom: 20px;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .logo { width: 40px; height: 40px; object-fit: contain; }
+  h1 { font-size: 24px; letter-spacing: 4px; margin: 0; }
+}
+
+.card {
+  width: min(960px, 100%);
+  background: #151735;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
   }
+}
 
-  .avatar-section {
-    text-align: center;
-    margin-bottom: 24px;
+.left {
+  display: grid;
+  gap: 12px;
 
-    .avatar {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #ddd;
-      margin-bottom: 12px;
-    }
-
-    .actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-  }
-
-  .info-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    label {
-      font-weight: 600;
-    }
-
-    input {
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      outline: none;
-    }
-
-    .btn-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 12px;
-    }
-  }
-
-  .btn {
-    padding: 8px 16px;
-    border-radius: 6px;
+  .avatar-box {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 2px dashed rgba(255,255,255,.2);
+    border-radius: 16px;
+    overflow: hidden;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
 
-    &.primary {
-      background: #3b82f6;
-      color: white;
-      border: none;
+    img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-      &:hover {
-        background: #2563eb;
-      }
+    .placeholder {
+      color: #9aa4ff;
+      opacity: .8;
+      font-size: 18px;
     }
 
-    &.outline {
-      border: 2px solid #3b82f6;
-      color: #3b82f6;
-      background: transparent;
-
-      &:hover {
-        background: #3b82f6;
-        color: white;
-      }
-    }
-
-    &.danger {
-      background: #ef4444;
-      color: white;
-      border: none;
-
-      &:hover {
-        background: #dc2626;
-      }
+    input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
     }
   }
+
+  .avatar-hint {
+    font-size: 12px; color: #c7ccff; opacity: .8;
+  }
+
+  .avatar-actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+}
+
+.right {
+  display: grid;
+  gap: 10px;
+}
+
+label { font-size: 14px; color: #c7ccff; }
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: #0f1130;
+  color: #fff;
+  outline: none;
+
+  &.invalid { border-color: #ff6b6b; }
+}
+
+.hint {
+  font-size: 12px;
+  color: #ffc9c9;
+  margin-top: -6px; margin-bottom: 6px;
+}
+
+.error {
+  background: #3b0f17;
+  border: 1px solid #ff6b6b;
+  color: #ffdede;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.actions, .btn-row {
+  display: flex; gap: 10px; margin-top: 8px;
+
+  button { cursor: pointer; }
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #2a2d6b;
+  color: #fff;
+
+  &.primary { background: #5865f2; }
+  &.danger { background: #d94848; }
+  &.outline {
+    background: transparent;
+    border-color: rgba(255,255,255,.24);
+  }
+
+  &:disabled { opacity: .6; cursor: not-allowed; }
 }

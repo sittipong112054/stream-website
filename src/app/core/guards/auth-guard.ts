@@ -3,7 +3,6 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, UrlTree } from '@angular
 import { AuthService } from '../services/auth';
 
 
-// ป้องกันหน้าที่ต้องล็อกอิน + เช็ค role จาก route.data.roles
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): boolean | UrlTree => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -16,14 +15,18 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): boolean
   const userRole = auth.role();
 
   if (needRoles && (!userRole || !needRoles.includes(userRole))) {
-    // ถ้า role ไม่ตรง ส่งกลับหน้าหลักตามบทบาท
-    return router.createUrlTree(userRole === 'ADMIN' ? ['/admin'] : ['/user']);
+    if (userRole === 'ADMIN') {
+      return router.createUrlTree(['/admin']);
+    } else if (userRole === 'USER') {
+      return router.createUrlTree(['/user']);
+    } else {
+      return router.createUrlTree(['/login']);
+    }
   }
 
   return true;
 };
 
-// กันหน้า login/register เมื่อ "ล็อกอินแล้ว"
 export const loginGuard: CanActivateFn = (): boolean | UrlTree => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -32,5 +35,6 @@ export const loginGuard: CanActivateFn = (): boolean | UrlTree => {
     const userRole = auth.role();
     return router.createUrlTree(userRole === 'ADMIN' ? ['/admin'] : ['/user']);
   }
+
   return true;
 };

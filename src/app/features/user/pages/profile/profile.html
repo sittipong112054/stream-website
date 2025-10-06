@@ -1,6 +1,5 @@
 <div class="page">
   <main class="container">
-    <!-- user header -->
     <section class="user-head card">
       <div class="user-left">
         <ng-container *ngIf="profile$ | async as p">
@@ -11,8 +10,8 @@
           />
         </ng-container>
         <div class="meta">
-          <h2>{{ username() }}</h2>
-          <p class="muted">{{ email() }}</p>
+          <h2 class="name">{{ displayName() }}</h2>
+          <p class="email">{{ emailText() }}</p>
         </div>
       </div>
       <div class="user-actions">

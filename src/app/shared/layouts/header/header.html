@@ -18,19 +18,27 @@
         <a routerLink="/admin" routerLinkActive="active">DASHBOARD</a>
         <a routerLink="/admin/games" routerLinkActive="active">GAMES</a>
         <a routerLink="/admin/coupons" routerLinkActive="active">COUPONS</a>
-        <a routerLink="/admin/transactions" routerLinkActive="active">TRANSACTIONS</a>
+        <a routerLink="/admin/transactions" routerLinkActive="active"
+          >TRANSACTIONS</a
+        >
         <a routerLink="/admin/ranking" routerLinkActive="active">RANKING</a>
       </nav>
 
       <!-- โปรไฟล์ขวาบน -->
       <div class="profile" *ngIf="loggedIn">
         <ng-container *ngIf="userStore.profile$ | async as p">
-          <img class="profile-avatar"
-               [src]="imgSrc(p)"
-               (error)="onImgError($event)"
-               alt="avatar" />
-          <span class="name">{{ p.displayName || 'NameProfile' }}</span>
-          <span class="wallet">{{ p.walletBalance | number:'1.0-0' }}฿</span>
+          <img
+            class="profile-avatar"
+            [src]="imgSrc(p)"
+            (error)="onImgError($event)"
+            alt="avatar"
+          />
+          <div class="profile-meta">
+            <span class="name">{{ p.displayName || "NameProfile" }}</span>
+            <span class="wallet"
+              >{{ p.walletBalance | number : "1.0-0" }}฿</span
+            >
+          </div>
           <button class="logout" (click)="logout()">ออก</button>
         </ng-container>
       </div>

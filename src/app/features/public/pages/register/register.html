@@ -74,6 +74,8 @@
             รูปแบบอีเมลไม่ถูกต้อง
           </div>
 
+
+
           <label for="password">รหัสผ่าน</label>
           <input
             id="password"
@@ -83,6 +85,8 @@
             [class.invalid]="f.password.touched && f.password.invalid"
             autocomplete="new-password"
           />
+
+          
 
           <div
             class="hint"
@@ -98,14 +102,7 @@
           </div>
 
           <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
-          <!--  -->
-          <input
-            type="file"
-            name="avatar"
-            accept="image/*"
-            (change)="onFileChange($event)"
-          />
-          <!--  -->
+
           <div class="actions">
             <button type="submit" [disabled]="loading()">ลงทะเบียน</button>
           </div>

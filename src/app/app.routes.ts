@@ -23,58 +23,55 @@ import { ProfilePage } from './features/user/pages/profile/profile';
 import { EditProfile } from './features/user/pages/edit-profiles/edit-profiles';
 
 export const routes: Routes = [
-    {
+  {
+    path: '',
+    component: PublicLayout,
+    children: [
+      {
         path: '',
-        component: PublicLayout, // << Header รวมอยู่ที่นี่
+        component: StoreLayout,
         children: [
-            // --- Store shell (มี subheader ของร้าน) ---
-            {
-                path: '',
-                component: StoreLayout,
-                children: [
-                    { path: '', redirectTo: 'store', pathMatch: 'full' },
-                    { path: 'store', component: Store },
-                    { path: 'games/:id', component: GameDetail },
-                    { path: 'cart', component: Cart },
-                ]
-            },
+          { path: '', redirectTo: 'store', pathMatch: 'full' },
+          { path: 'store', component: Store },
+          { path: 'games/:id', component: GameDetail },
+          { path: 'cart', component: Cart },
+        ],
+      },
 
-            // --- Auth ---
-            { path: 'login', component: Login, canActivate: [loginGuard] },
-            { path: 'register', component: Register, canActivate: [loginGuard] },
+      { path: 'login', component: Login, canActivate: [loginGuard] },
+      { path: 'register', component: Register, canActivate: [loginGuard] },
 
-            // --- User (ต้องล็อกอิน) ---
-            {
-                path: 'user',
-                canActivate: [authGuard],
-                data: { roles: ['USER'] },
-                children: [
-                    { path: '', redirectTo: 'library', pathMatch: 'full' },
-                    { path: 'library', component: Library },
-                    { path: 'profile', component: ProfilePage },
-                    { path: 'checkout/success', component: CheckoutSuccess },
-                    { path: 'edit-profiles', component: EditProfile }
-                ]
-            },
+      {
+        path: 'user',
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
+        data: { roles: ['USER'] },
+        children: [
+          { path: '', redirectTo: 'library', pathMatch: 'full' },
+          { path: 'library', component: Library },
+          { path: 'profile', component: ProfilePage },
+          { path: 'checkout/success', component: CheckoutSuccess },
+          { path: 'edit-profiles', component: EditProfile },
+        ],
+      },
 
-            // --- Admin (ต้องล็อกอิน) ---
-            {
-                path: 'admin',
-                canActivate: [authGuard],
-                data: { roles: ['ADMIN'] },
-                children: [
-                    { path: '', component: Dashboard },
-                    { path: 'games', component: Games },
-                    { path: 'coupons', component: Coupons },
-                    { path: 'transactions', component: Transactions },
-                    { path: 'ranking', component: Ranking },
-                ]
-            },
+      {
+        path: 'admin',
+        canActivate: [authGuard],
+        canActivateChild: [authGuard],
+        data: { roles: ['ADMIN'] },
+        children: [
+          { path: '', component: Dashboard },
+          { path: 'games', component: Games },
+          { path: 'coupons', component: Coupons },
+          { path: 'transactions', component: Transactions },
+          { path: 'ranking', component: Ranking },
+        ],
+      },
 
-            // --- 404 ---
-            { path: 'not-found', component: NotFound },
-        ]
-    },
+      { path: 'not-found', component: NotFound },
+    ],
+  },
 
-    { path: '**', redirectTo: 'not-found' },
+  { path: '**', redirectTo: 'not-found' },
 ];

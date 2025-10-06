@@ -61,7 +61,7 @@ export class Register {
   }
 
   async submit() {
-    console.log('[REGISTER] submit() fired'); // <-- LOG เช็คว่าโดนเรียกจริง
+    console.log('[REGISTER] submit() fired'); 
     this.errorMsg.set(null);
 
     if (this.form.invalid) {

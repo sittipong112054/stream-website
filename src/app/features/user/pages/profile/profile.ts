@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -40,11 +40,13 @@ export class ProfilePage {
   public profile$: Observable<UserProfile | null> = this.user.profile$;
 
   // mock (ยังใช้แสดงหน้าได้ ถ้าอยากเอาออกก็ได้)
-  avatar = signal('/assets/sample/avatar-1.jpg');
-  username = signal('NameProfile');
-  email = signal('emailaddress@gmail.com');
+  avatarUrl = computed(() => this.user.getProfile()?.avatarUrl ?? '/assets/sample/avatar-1.jpg');
+  displayName = computed(() => this.user.getProfile()?.displayName ?? '—');
+  emailText   = computed(() => this.user.getProfile()?.email ?? '—');
+  
+ balance = signal<number>(500.0);
 
-  balance = signal(500.0);
+
   quickAdd = [100, 200, 500];
   customAdd = signal<number | null>(null);
 

@@ -2,24 +2,33 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface UserProfile {
-    displayName: string;
-    avatarUrl?: string;
-    walletBalance: number;
+  id: number;
+  displayName: string;
+  email: string;
+  walletBalance: number;
+  avatarUrl: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class UserStore {
-    profile$ = new BehaviorSubject<UserProfile>({
-        displayName: 'NameProfile',
-        avatarUrl: 'assets/avatar-sample.jpg',
-        walletBalance: 50000,
-    });
+  private _profile$ = new BehaviorSubject<UserProfile | null>(null);
+  /** Observable สำหรับใช้ใน template หรือ subscribe */
+  profile$ = this._profile$.asObservable();
 
-    setWallet(amount: number) {
-        const p = this.profile$.getValue();
-        this.profile$.next({ ...p, walletBalance: amount });
-    }
-    setProfile(next: Partial<UserProfile>) {
-        this.profile$.next({ ...this.profile$.getValue(), ...next });
-    }
+  /** ใช้ตอนต้องการอัปเดตเฉพาะบาง field */
+  setProfile(next: Partial<UserProfile> | UserProfile) {
+    const cur = this._profile$.getValue() ?? {} as UserProfile;
+    this._profile$.next({ ...cur, ...next });
+  }
+
+  /** ล้างข้อมูล (ตอน logout) */
+  clearProfile() {
+    this._profile$.next(null);
+  }
+
+
+  /** getter สำหรับใช้ใน service */
+  getProfile(): UserProfile | null {
+    return this._profile$.getValue();
+  }
 }

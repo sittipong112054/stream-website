@@ -1,1 +1,114 @@
-<p>profile works!</p>
+<div class="page">
+  <main class="container">
+    <!-- user header -->
+    <section class="user-head card">
+      <div class="user-left">
+        <ng-container *ngIf="profile$ | async as p">
+          <img
+            class="profile-avatar"
+            [src]="p.avatarUrl || '/assets/sample/avatar-1.jpg'"
+            alt="avatar"
+          />
+        </ng-container>
+        <div class="meta">
+          <h2>{{ username() }}</h2>
+          <p class="muted">{{ email() }}</p>
+        </div>
+      </div>
+      <div class="user-actions">
+        <button class="btn danger" (click)="logout()">LOGOUT</button>
+        <button class="btn outline" routerLink="/user/edit-profiles">
+          EDIT PROFILE
+        </button>
+      </div>
+    </section>
+
+    <div class="grid">
+      <!-- My Games -->
+      <section class="games card">
+        <div class="section-head">
+          <h3>My Games</h3>
+          <div class="tools">
+            <span class="muted">View</span>
+            <div class="dots"></div>
+            <div class="count">{{ games().length }}</div>
+          </div>
+        </div>
+
+        <div class="games-grid">
+          <a class="game" *ngFor="let g of games()">
+            <img [src]="g.cover" [alt]="g.title" />
+            <span class="title">{{ g.title }}</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Wallet -->
+      <aside class="wallet card">
+        <div class="wallet-head">
+          <h3>Wallet Balance</h3>
+          <div class="amount">{{ balance() | number : "1.2-2" }}</div>
+        </div>
+
+        <div class="addfunds">
+          <h4>Add Funds</h4>
+          <div class="quick">
+            <button
+              class="chip"
+              *ngFor="let q of quickAdd"
+              (click)="addFunds(q)"
+            >
+              {{ q }}฿
+            </button>
+          </div>
+
+          <div class="custom real">
+            <input
+              type="number"
+              min="1"
+              step="1"
+              [value]="customAdd() ?? ''"
+              (input)="onCustomAddChange($event)"
+              placeholder="0.00"
+            />
+
+            <button class="btn" (click)="addCustom()">ADD</button>
+          </div>
+
+          <div class="secure">
+            <span class="lock"></span>
+            <div>
+              <p class="secure-title">Secure Payment</p>
+              <p class="muted tiny">
+                All transactions are processed securely. Funds are added
+                instantly to your wallet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="history">
+          <h4>Transaction History</h4>
+          <ul>
+            <li
+              *ngFor="let t of transactions()"
+              [class.plus]="t.amount > 0"
+              [class.minus]="t.amount < 0"
+            >
+              <span
+                class="dot"
+                [class.green]="t.amount > 0"
+                [class.red]="t.amount < 0"
+              ></span>
+              <span class="title">{{ t.title }}</span>
+              <span class="time">{{ t.at }}</span>
+              <span class="amt">
+                {{ t.amount > 0 ? "+" : "" }}{{ t.amount | number : "1.0-0" }}฿
+              </span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>

@@ -1,45 +1,47 @@
 <div class="screen">
-    <div class="card">
-
-        <div class="brand">
-            <img src="assets/logo.png" alt="Stream Logo" class="logo" />
-            <h1>STREAM</h1>
-        </div>
-
-        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-            <label for="email">เข้าสู่ระบบด้วยอีเมล</label>
-            <input id="email" type="email" placeholder="name@example.com" formControlName="email"
-                [class.invalid]="f.email.touched && f.email.invalid" autocomplete="email" />
-
-            <div class="hint" *ngIf="f.email.touched && f.email.hasError('required')">กรุณากรอกอีเมล</div>
-            <div class="hint" *ngIf="f.email.touched && f.email.hasError('email')">รูปแบบอีเมลไม่ถูกต้อง</div>
-
-            <label for="password">รหัสผ่าน</label>
-            <input id="password" type="password" placeholder="••••••••" formControlName="password"
-                [class.invalid]="f.password.touched && f.password.invalid" autocomplete="current-password" />
-
-            <div class="hint" *ngIf="f.password.touched && f.password.hasError('required')">กรุณากรอกรหัสผ่าน</div>
-            <div class="hint" *ngIf="f.password.touched && f.password.hasError('minlength')">รหัสผ่านอย่างน้อย 4
-                ตัวอักษร</div>
-
-            <div class="role-row">
-                <label class="role-label">เข้าสู่ระบบเป็น</label>
-                <select formControlName="role" aria-label="เลือกบทบาท">
-                    <option value="USER">User</option>
-                    <option value="ADMIN">Admin</option>
-                </select>
-            </div>
-
-            <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
-
-            <button type="submit" [disabled]="loading()">
-                <span *ngIf="!loading()">เข้าสู่ระบบ</span>
-                <span *ngIf="loading()" class="spinner"></span>
-            </button>
-        </form>
-
-        <div class="foot">
-            ยังไม่มีบัญชี? <a routerLink="/register">สมัครสมาชิก</a>
-        </div>
+  <div class="card">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Stream Logo" class="logo" />
+      <h1>STREAM</h1>
     </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label for="email">เข้าสู่ระบบด้วยอีเมล</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="name@example.com"
+        formControlName="email"
+        [class.invalid]="f.email.touched && f.email.invalid"
+        autocomplete="email"
+      />
+      <div class="hint" *ngIf="f.email.touched && f.email.hasError('required')">กรุณากรอกอีเมล</div>
+      <div class="hint" *ngIf="f.email.touched && f.email.hasError('email')">รูปแบบอีเมลไม่ถูกต้อง</div>
+
+      <label for="password">รหัสผ่าน</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="••••••••"
+        formControlName="password"
+        [class.invalid]="f.password.touched && f.password.invalid"
+        autocomplete="current-password"
+      />
+      <div class="hint" *ngIf="f.password.touched && f.password.hasError('required')">กรุณากรอกรหัสผ่าน</div>
+      <div class="hint" *ngIf="f.password.touched && f.password.hasError('minlength')">
+        รหัสผ่านอย่างน้อย 4 ตัวอักษร
+      </div>
+
+      <div class="error" *ngIf="errorMsg()">{{ errorMsg() }}</div>
+
+      <button type="submit" [disabled]="loading()">
+        <span *ngIf="!loading()">เข้าสู่ระบบ</span>
+        <span *ngIf="loading()" class="spinner"></span>
+      </button>
+    </form>
+
+    <div class="foot">
+      ยังไม่มีบัญชี? <a routerLink="/register">สมัครสมาชิก</a>
+    </div>
+  </div>
 </div>

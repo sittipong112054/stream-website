@@ -1,0 +1,34 @@
+<!-- edit-profiles.html (แก้) -->
+<div class="edit-profile card" *ngIf="profile$ | async as p">
+  <h2>Edit Profile</h2>
+
+  <div class="avatar-section">
+    <img
+      class="profile-avatar"
+      [src]="imgSrc(p)"
+      (error)="onImgError($event)"
+      alt="avatar"
+    />
+
+    <div class="actions">
+      <input type="file" accept="image/*" (change)="onFilePick($event)" />
+      <button class="btn primary" (click)="uploadAvatar()" [disabled]="!file">
+        Upload Avatar
+      </button>
+      <button class="btn danger" (click)="removeAvatar()">Remove</button>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="saveProfile()" class="info-form">
+    <label>Display Name</label>
+    <input type="text" formControlName="displayName" placeholder="Enter name" />
+
+    <label>Email</label>
+    <input type="email" formControlName="email" placeholder="Enter email" />
+
+    <div class="btn-row">
+      <button type="submit" class="btn primary">Save</button>
+      <button type="button" class="btn outline" (click)="back()">Back</button>
+    </div>
+  </form>
+</div>

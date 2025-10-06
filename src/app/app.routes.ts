@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-
 import { Login } from './features/public/pages/login/login';
 import { Register } from './features/public/pages/register/register';
 import { Store } from './features/public/pages/store/store';
@@ -8,7 +7,6 @@ import { GameDetail } from './features/public/pages/game-detail/game-detail';
 import { Cart } from './features/public/pages/cart/cart';
 
 import { Library } from './features/user/pages/library/library';
-import { Profile } from './features/user/pages/profile/profile';
 import { CheckoutSuccess } from './features/user/pages/checkout-success/checkout-success';
 
 import { Dashboard } from './features/admin/pages/dashboard/dashboard';
@@ -21,6 +19,8 @@ import { NotFound } from './features/public/pages/not-found/not-found';
 import { authGuard, loginGuard } from './core/guards/auth-guard';
 import { PublicLayout } from './shared/public-layout/public-layout';
 import { StoreLayout } from './shared/store-layout/store-layout';
+import { ProfilePage } from './features/user/pages/profile/profile';
+import { EditProfile } from './features/user/pages/edit-profiles/edit-profiles';
 
 export const routes: Routes = [
     {
@@ -51,8 +51,9 @@ export const routes: Routes = [
                 children: [
                     { path: '', redirectTo: 'library', pathMatch: 'full' },
                     { path: 'library', component: Library },
-                    { path: 'profile', component: Profile },
+                    { path: 'profile', component: ProfilePage },
                     { path: 'checkout/success', component: CheckoutSuccess },
+                    { path: 'edit-profiles', component: EditProfile }
                 ]
             },
 

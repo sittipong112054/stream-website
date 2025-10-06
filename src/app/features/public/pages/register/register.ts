@@ -2,10 +2,12 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.html',
   styleUrl: './register.scss',
@@ -16,11 +18,9 @@ export class Register {
   private router = inject(Router);
   private auth = inject(AuthService);
 
-  // เก็บไฟล์กับพรีวิว
   avatarFile = signal<File | null>(null);
   avatarPreview = signal<string | null>(null);
 
-  // ฟอร์ม
   form = this.fb.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -35,9 +35,22 @@ export class Register {
   onFileChange(ev: Event) {
     const input = ev.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
+
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        this.errorMsg.set('อนุญาตเฉพาะไฟล์รูปภาพ');
+        input.value = '';
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.errorMsg.set('ไฟล์ใหญ่เกิน 5MB');
+        input.value = '';
+        return;
+      }
+    }
+
     this.avatarFile.set(file);
 
-    // พรีวิวรูป
     if (file) {
       const reader = new FileReader();
       reader.onload = () => this.avatarPreview.set(reader.result as string);
@@ -48,7 +61,9 @@ export class Register {
   }
 
   async submit() {
+    console.log('[REGISTER] submit() fired'); // <-- LOG เช็คว่าโดนเรียกจริง
     this.errorMsg.set(null);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -57,26 +72,18 @@ export class Register {
 
     try {
       const { username, email, password } = this.form.value;
+      console.log('[REGISTER] payload', { username, email, hasPassword: !!password, hasFile: !!this.avatarFile() });
 
-      // TODO: อัปโหลดไฟล์จริงผ่าน API/Firebase Storage
-      // ตอนนี้เดโม: ใช้ dataURL ชั่วคราวแทน URL รูปจาก storage
-      const avatarDataUrl = this.avatarPreview();
+      await firstValueFrom(
+        this.auth.registerWithAvatar$({
+          username: username!, email: email!, password: password!, avatar: this.avatarFile(),
+        })
+      );
 
-      // ปกติจะ call API register → ได้ user + token กลับมา
-      // ที่นี่เดโม: แค่สร้างบัญชี user ฝั่ง mock แล้วส่งไปหน้า login
-      // คุณอาจทำ this.auth.register$(...).subscribe(...)
-      // หรือบันทึกใน localStorage (mock) ตามที่ทีมกำหนด
-      // ตัวอย่างสั้น ๆ:
-      const ok = !!username && !!email && !!password; // แทน API จริง
-      if (!ok) throw new Error('ลงทะเบียนไม่สำเร็จ');
-
-      // คุณอาจเก็บ draft user ไว้ใน localStorage ก็ได้ เช่น:
-      // localStorage.setItem('draft_user', JSON.stringify({ username, email, avatar: avatarDataUrl }))
-
-      // เมื่อสมัครสำเร็จ → ไปหน้า login
       this.router.navigate(['/login'], { queryParams: { registered: 1 } });
     } catch (err: any) {
-      this.errorMsg.set(err?.message ?? 'ลงทะเบียนไม่สำเร็จ');
+      console.error('[REGISTER] error', err);
+      this.errorMsg.set(err?.error?.error ?? err?.message ?? 'ลงทะเบียนไม่สำเร็จ');
     } finally {
       this.loading.set(false);
     }

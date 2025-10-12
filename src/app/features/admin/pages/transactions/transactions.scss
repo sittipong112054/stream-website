@@ -1,0 +1,243 @@
+.admin-tx {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  padding: 32px;
+  background: #0b0f14;
+  color: #e6edf3;
+  min-height: 100svh;
+
+  /* ----- Sidebar ----- */
+  .sidebar {
+    @extend .card;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background: #161d25;
+    border: 1px solid #243041;
+
+    .sb-head {
+      font-weight: 800;
+      font-size: 15px;
+      color: #9caec5;
+      margin-bottom: 14px;
+    }
+
+    .userlist {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      li {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 12px;
+        align-items: center;
+        padding: 10px;
+        border-radius: 10px;
+        background: transparent;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: #1b2735;
+        }
+
+        &.active {
+          background: #1b2735;
+          border-color: #3f8cff;
+        }
+
+        .avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          object-fit: cover;
+        }
+
+        .meta {
+          .name {
+            font-weight: 800;
+            font-size: 14px;
+            color: #e6edf3;
+          }
+          .email {
+            opacity: 0.7;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  /* ----- Main Panel ----- */
+  .main {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 20px;
+
+      span {
+        color: #3f8cff;
+      }
+    }
+
+    /* --- Stat cards --- */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+
+      .stat {
+        @extend .card;
+        padding: 18px;
+        background: #161d25;
+        border: 1px solid #243041;
+        border-radius: 14px;
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+        }
+
+        .label {
+          opacity: 0.85;
+          margin-bottom: 6px;
+          font-size: 13px;
+        }
+
+        .value {
+          font-weight: 900;
+          font-size: 26px;
+          margin-bottom: 6px;
+        }
+
+        .caption {
+          opacity: 0.6;
+          font-size: 12px;
+        }
+
+        &.green .value {
+          color: #22c55e;
+        }
+        &.violet .value {
+          color: #8b5cf6;
+        }
+        &.yellow .value {
+          color: #f59e0b;
+        }
+      }
+    }
+
+    /* --- Transaction list --- */
+    .list {
+      @extend .card;
+      background: #161d25;
+      border: 1px solid #243041;
+      border-radius: 14px;
+      padding: 8px 0;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+
+      .row {
+        display: grid;
+        grid-template-columns: 220px 1fr 160px 140px;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border-top: 1px solid #243041;
+        transition: background 0.12s ease;
+
+        &:first-child {
+          border-top: none;
+        }
+
+        &:hover {
+          background: #1b2735;
+        }
+
+        &.head {
+          opacity: 0.8;
+          font-weight: 800;
+          font-size: 13px;
+          background: #1e293b;
+          border-top-left-radius: 14px;
+          border-top-right-radius: 14px;
+        }
+
+        .icon {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 800;
+
+          .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+          }
+
+          &.topup .dot {
+            background: #22c55e;
+          }
+          &.purchase .dot {
+            background: #ef4444;
+          }
+        }
+
+        .sub {
+          opacity: 0.9;
+          font-size: 14px;
+        }
+
+        .right {
+          text-align: right;
+        }
+
+        .amount {
+          font-weight: 900;
+          font-size: 15px;
+
+          &.plus {
+            color: #22c55e;
+          }
+
+          &.minus {
+            color: #ef4444;
+          }
+        }
+      }
+
+      .empty,
+      .loading {
+        padding: 16px;
+        text-align: center;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  /* --- Shared card style --- */
+  .card {
+    background: #161d25;
+    border: 1px solid #243041;
+    border-radius: 14px;
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+  .admin-tx {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+}

@@ -8,6 +8,12 @@ export type Role = 'USER' | 'ADMIN';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  topup(amount: number): Observable<unknown> {
+    throw new Error('Method not implemented.');
+  }
+  getMyTransactions() {
+    throw new Error('Method not implemented.');
+  }
   private TOKEN_KEY = 'auth_token';
   private ROLE_KEY = 'auth_role';
 

@@ -1,0 +1,141 @@
+.cart-wrapper {
+  min-height: 100dvh;
+  background: #0E141B; /* สีพื้นรอบนอก */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cart-bg {
+  width: 90%;
+  max-width: 1200px;
+  border-radius: 20px;
+  padding: 40px;
+  background: linear-gradient(135deg, #14344B 0%, #0E141B 100%);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+
+.cart-page {
+  padding: 24px;
+  color: #e6edf3;
+
+  .heading { font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 18px;
+  }
+
+  .card {
+    background: #161d25;
+    border: 1px solid #2a2f36;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(0,0,0,.35);
+  }
+
+  .items {
+    display: grid;
+    gap: 12px;
+
+    .item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      padding: 10px;
+      align-items: center;
+
+      .thumb {
+        width: 100%; height: 76px; object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .meta {
+        padding: 6px 10px;
+
+        .title {
+          font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+          .plat { font-size: 12px; opacity: .8; }
+        }
+
+        .row.price {
+          display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;
+          .strike { text-decoration: line-through; opacity: .5; }
+          .final { font-weight: 800; }
+          .final.is-discount { color: #93e071; }
+          .off { background: #1f2b1f; color: #93e071; font-weight: 800; padding: 2px 6px; border-radius: 8px; font-size: 12px; }
+        }
+
+        .controls {
+          display: flex; align-items: center; gap: 6px;
+
+          .qty {
+            width: 28px; height: 28px;
+            border-radius: 8px; border: 1px solid #2a2f36; background: #0f141a;
+            color: #e6edf3; cursor: pointer;
+          }
+          .qv { min-width: 20px; text-align: center; font-weight: 700; }
+
+          .trash {
+            margin-left: auto;
+            border: 1px solid #442a2a; background: #1a0f0f;
+            color: #ff6b6b; border-radius: 8px; padding: 4px 8px; cursor: pointer;
+          }
+        }
+      }
+    }
+
+    .continue {
+      padding: 10px;
+      .btn-ghost {
+        display: inline-block; padding: 8px 12px; border-radius: 8px;
+        border: 1px solid #2a2f36; background: #0f141a; color: #e6edf3; text-decoration: none;
+      }
+    }
+
+    .empty {
+      padding: 20px;
+      display: grid; gap: 10px; place-items: start;
+      .btn {
+        padding: 8px 12px; border-radius: 8px; background: #1971ff; color: #fff; text-decoration: none;
+      }
+    }
+  }
+
+  .summary {
+    padding: 14px;
+    h3 { margin: 0 0 10px; font-size: 16px; }
+
+    .coupon {
+      display: grid; grid-template-columns: 1fr 90px; gap: 8px; margin-bottom: 10px;
+      input {
+        background: #0f141a; border: 1px solid #2a2f36; border-radius: 8px; padding: 8px; color: #e6edf3;
+      }
+      .btn {
+        border-radius: 8px; background: #0f3a66; color: #bcd9ff; border: 1px solid #1c4f7e;
+      }
+    }
+
+    .lines {
+      display: grid; gap: 8px; margin: 10px 0 14px;
+      .line { display: flex; justify-content: space-between; align-items: center; }
+      .line.total b { font-size: 18px; }
+      .discount { color: #ff8080; }
+      .remove-coupon {
+        margin-left: 8px; font-size: 12px; opacity: .8; cursor: pointer;
+        background: transparent; color: #ddd; border: none; text-decoration: underline;
+      }
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 10px; border-radius: 10px; border: 0;
+      background: #0a66c2; color: white; font-weight: 800; cursor: pointer;
+      &:disabled { opacity: .5; cursor: default; }
+    }
+  }
+
+  @media (max-width: 960px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+}

@@ -1,1 +1,73 @@
-<p>transactions works!</p>
+<!-- src/app/features/admin/pages/transactions/transactions.html -->
+<section class="admin-tx">
+  <aside class="sidebar card">
+    <div class="sb-head">User Accounts ({{ users().length }})</div>
+    <ul class="userlist">
+      <li *ngFor="let u of users()"
+          [class.active]="u.id === selectedUserId()"
+          (click)="pickUser(u.id)">
+        <img class="avatar" [src]="u.avatarUrl || '/assets/sample/avatar-1.jpg'">
+        <div class="meta">
+          <div class="name">{{ u.username }}</div>
+          <div class="email">{{ u.email }}</div>
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <h2 class="title">Transaction <span *ngIf="selectedUser() as su">{{ su.username }}</span></h2>
+
+    <div class="stats">
+      <div class="stat card">
+        <div class="label">Total Transactions</div>
+        <div class="value">{{ sumTotalCount() }}</div>
+        <div class="caption">All transaction types</div>
+      </div>
+
+      <div class="stat card green">
+        <div class="label">Total Revenue</div>
+        <div class="value">฿ {{ sumPurchase() | number:'1.2-2' }}</div>
+        <div class="caption">From game purchases</div>
+      </div>
+
+      <div class="stat card violet">
+        <div class="label">Total Revenue</div>
+        <div class="value">฿ {{ sumTopup() | number:'1.2-2' }}</div>
+        <div class="caption">Wallet deposits</div>
+      </div>
+
+      <div class="stat card yellow">
+        <div class="label">Avg Transaction</div>
+        <div class="value">฿ {{ sumAvg() | number:'1.2-2' }}</div>
+        <div class="caption">Average value</div>
+      </div>
+    </div>
+
+    <div class="list card">
+      <div class="row head">
+        <div class="c1">Type</div>
+        <div class="c2">Detail</div>
+        <div class="c3">Date</div>
+        <div class="c4 right">Amount</div>
+      </div>
+
+      <div class="row" *ngFor="let t of txs()">
+        <div class="c1 icon" [class.topup]="t.type==='TOPUP'" [class.purchase]="t.type==='PURCHASE'">
+          <span class="dot"></span>
+          {{ txTitle(t) }}
+        </div>
+        <div class="c2 sub">{{ txSubtitle(t) }}</div>
+        <div class="c3">{{ t.created_at | date:'dd MMM yyyy' }}</div>
+        <div class="c4 right amount"
+             [class.plus]="t.type==='TOPUP'"
+             [class.minus]="t.type==='PURCHASE'">
+          {{ displayAmount(t) | number:'1.2-2' }}฿
+        </div>
+      </div>
+
+      <div class="empty" *ngIf="!loading() && txs().length === 0">No transactions</div>
+      <div class="loading" *ngIf="loading()">Loading...</div>
+    </div>
+  </main>
+</section>

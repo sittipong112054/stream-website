@@ -11,6 +11,10 @@ export interface UserProfile {
 
 @Injectable({ providedIn: 'root' })
 export class UserStore {
+  [x: string]: any;
+  topup(amount: number): import("rxjs").Observable<unknown> {
+    throw new Error('Method not implemented.');
+  }
   private _profile$ = new BehaviorSubject<UserProfile | null>(null);
   /** Observable สำหรับใช้ใน template หรือ subscribe */
   profile$ = this._profile$.asObservable();

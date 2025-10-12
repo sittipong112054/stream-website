@@ -35,7 +35,11 @@
         </div>
 
         <div class="games-grid">
-          <a class="game" *ngFor="let g of games()">
+          <a
+            class="game"
+            *ngFor="let g of games()"
+            [routerLink]="['/games', g.id]"
+          >
             <img [src]="g.cover" [alt]="g.title" />
             <span class="title">{{ g.title }}</span>
           </a>
@@ -99,8 +103,12 @@
                 [class.green]="t.amount > 0"
                 [class.red]="t.amount < 0"
               ></span>
-              <span class="title">{{ t.title }}</span>
-              <span class="time">{{ t.at }}</span>
+
+              <div class="info">
+                <span class="title">{{ t.title }}</span>
+                <span class="date">{{ t.at }}</span>
+              </div>
+
               <span class="amt">
                 {{ t.amount > 0 ? "+" : "" }}{{ t.amount | number : "1.0-0" }}฿
               </span>

@@ -1,1 +1,110 @@
-<p>cart works!</p>
+<div class="cart-wrapper">
+  <div class="cart-bg">
+    <div class="cart-page">
+      <h2 class="heading">NameProfile’s Shopping Cart</h2>
+
+      <div class="grid">
+        <div class="items">
+          <ng-container *ngIf="items().length; else empty">
+            <div class="item card" *ngFor="let it of items()">
+              <img
+                class="thumb"
+                [src]="it.cover || 'assets/placeholder-wide.jpg '"
+                [alt]="it.title"
+              />
+
+              <div class="meta">
+                <div class="title">
+                  {{ it.title }}
+                  <span class="plat" *ngIf="it.platform">{{
+                    it.platform
+                  }}</span>
+                </div>
+
+                <div class="row price">
+                  <span class="strike" *ngIf="it.discount"
+                    >฿ {{ it.price | number : "1.2-2" }}</span
+                  >
+                  <span class="final" [class.is-discount]="it.discount"
+                    >฿
+                    {{
+                      (it.discount
+                        ? (it.price * (100 - it.discount)) / 100
+                        : it.price
+                      ) | number : "1.2-2"
+                    }}</span
+                  >
+                  <span class="off" *ngIf="it.discount"
+                    >-{{ it.discount }}%</span
+                  >
+                </div>
+
+                <div class="controls">
+                  <button class="qty" (click)="dec(it)">−</button>
+                  <span class="qv">{{ it.qty }}</span>
+                  <button class="qty" (click)="inc(it)">+</button>
+
+                  <button class="trash" title="ลบ" (click)="remove(it)">
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="continue card">
+              <a routerLink="/store" class="btn-ghost">Continue Shopping</a>
+            </div>
+          </ng-container>
+
+          <ng-template #empty>
+            <div class="empty card">
+              <div>ตะกร้าไม่มีสินค้า</div>
+              <a routerLink="/store" class="btn">ไปเลือกเกมต่อ</a>
+            </div>
+          </ng-template>
+        </div>
+
+        <aside class="summary card">
+          <h3>ราคาสรุปโดยประมาณ</h3>
+
+          <div class="coupon">
+            <input
+              type="text"
+              placeholder="ใส่ส่วนลด"
+              [value]="code()"
+              (input)="code.set($any($event.target).value)"
+            />
+
+            <button class="btn" (click)="apply()">ADD</button>
+          </div>
+
+          <div class="lines">
+            <div class="line">
+              <span>ราคารวมก่อนลด</span>
+              <b>฿ {{ subtotal() | number : "1.2-2" }}</b>
+            </div>
+
+            <div class="line" *ngIf="coupon() as c">
+              <span>คูปอง ({{ c.code }})</span>
+              <b class="discount">- ฿ {{ c.amount | number : "1.2-2" }}</b>
+              <button class="remove-coupon" (click)="removeCoupon()">ลบ</button>
+            </div>
+
+            <div class="line total">
+              <span>ราคารวม</span>
+              <b>฿ {{ total() | number : "1.2-2" }}</b>
+            </div>
+          </div>
+
+          <button
+            class="btn-primary"
+            [disabled]="!items().length || isPaying()"
+            (click)="checkout()"
+          >
+            {{ isPaying() ? "กำลังชำระเงิน…" : "ดำเนินการชำระเงิน" }}
+          </button>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>

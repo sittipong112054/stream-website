@@ -1,7 +1,14 @@
+
+html, body {
+  height: 100%;
+  background: #0b0f14; /* สีเดียวกับ .store */
+}
+
 .store {
     color: #e6edf3;
     background: #0b0f14;
     padding-bottom: 40px;
+    min-height: 100vh;
 
     .hero {
         position: relative;

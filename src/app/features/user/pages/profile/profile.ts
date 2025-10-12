@@ -36,7 +36,6 @@ interface GameItem { id: string; title: string; cover: string; }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilePage {
-  // ต้องเป็น public เพื่อใช้ใน template
   public user = inject(UserStore);
   public auth = inject(AuthService);
   public router = inject(Router);
@@ -44,8 +43,6 @@ export class ProfilePage {
 
 
   public profile$: Observable<UserProfile | null> = this.user.profile$;
-
-  // mock (ยังใช้แสดงหน้าได้ ถ้าอยากเอาออกก็ได้)
   avatarUrl = computed(() => this.user.getProfile()?.avatarUrl ?? '/assets/sample/avatar-1.jpg');
   displayName = computed(() => this.user.getProfile()?.displayName ?? '—');
   emailText   = computed(() => this.user.getProfile()?.email ?? '—');
@@ -62,13 +59,11 @@ games = signal<GameItem[]>([]);
 
 
   ngOnInit() {
-  // 🧾 โหลดประวัติธุรกรรม
   this.userApi.getMyTransactions().subscribe({
     next: (res) => {
 const mapped: Tx[] = (res.data || []).map((r: any) => {
-  // 🔹 แปลงให้เป็นตัวพิมพ์ใหญ่หมดก่อน แล้วตรวจสอบ
   const type = String(r.type).toUpperCase();
-  const isBuy = type === 'BUY' || type === 'PURCHASE'; // ครอบคลุมทั้งสองแบบ
+  const isBuy = type === 'BUY' || type === 'PURCHASE';
   const title = isBuy
         return {
           id: String(r.id),
@@ -84,8 +79,6 @@ const mapped: Tx[] = (res.data || []).map((r: any) => {
           }),
         };
       });
-
-      // เก็บเฉพาะ 10 รายการล่าสุด (ถ้ามีเยอะ)
       this.transactions.set(mapped.slice(0, 10));
     },
     error: (err) => {
@@ -98,7 +91,7 @@ const mapped: Tx[] = (res.data || []).map((r: any) => {
       const list: GameItem[] = (res.data || []).map((g: any) => ({
         id: g.id,
         title: g.title,
-        cover: g.cover || '/assets/placeholder-wide.jpg', // fallback
+        cover: g.cover || '/assets/placeholder-wide.jpg',
       }));
       this.games.set(list);
     },

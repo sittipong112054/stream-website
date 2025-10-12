@@ -73,11 +73,4 @@ getMyTransactions() {
     );
   }
 
-//   getMyPurchases() {
-//   return this.http.get<{ ok: boolean; data: { orderId: number; title: string; cover: string | null; price: number; date: string; }[] }>(
-//     `${this.constants.API_URL}/me/purchases`,
-//     { withCredentials: true }
-//   );
-// }
-
 }

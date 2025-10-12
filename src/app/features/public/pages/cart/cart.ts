@@ -1,5 +1,3 @@
-
-
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -46,17 +44,13 @@ export class CartPage {
 
     this.cart.checkout().subscribe({
       next: ({ orderId, status, total }) => {
-        // โหลดตะกร้าใหม่ (ฝั่ง server ลบ item แล้ว)
         this.cart.load();
-        // ล้างคูปองใน client
         this.cart.removeCoupon();
 
         if (status === 'PAID') {
           alert(`ชำระเงินสำเร็จ!\nเลขที่คำสั่งซื้อ #${orderId}\nยอดสุทธิ ฿ ${total.toLocaleString()}`);
-          // TODO: ถ้ามีหน้าใบเสร็จ/ออเดอร์
-          // this.router.navigate(['/orders', orderId]);
+
         } else {
-          // เงินไม่พอ -> พาไปเติมเงิน
           alert(`ยอดสุทธิ ฿ ${total.toLocaleString()} — ยอดเงินในวอลเล็ตไม่พอ\nโปรดเติมเงินเพื่อชำระคำสั่งซื้อ #${orderId}`);
           this.router.navigate(['/wallet/topup'], { queryParams: { orderId } });
         }

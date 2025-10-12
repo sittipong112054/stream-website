@@ -12,8 +12,8 @@ export interface GameDto {
   categoryName?: string | null;
   imageUrl?: string | null;
   description?: string | null;
-  releasedAt?: string | null;   // datetime
-  releaseDate?: string | null;  // date (virtual)
+  releasedAt?: string | null; 
+  releaseDate?: string | null;  
   status?: 'ACTIVE' | 'INACTIVE';
 }
 
@@ -55,7 +55,7 @@ export class GameService {
     price: number;
     categoryId: number;
     description?: string;
-    releasedAt?: string;     // 'YYYY-MM-DD'
+    releasedAt?: string; 
     image?: File | null;
   }): Observable<{ ok: true }> {
     const fd = new FormData();

@@ -91,8 +91,6 @@ export class AuthService {
         })
       );
   }
-
-  /** โหลดโปรไฟล์ */
   me$() {
     return this.http
       .get<any>(`${this.constants.API_URL}/auth/me`, { withCredentials: true })

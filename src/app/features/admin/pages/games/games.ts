@@ -38,7 +38,7 @@ export class AdminGamesPage {
 
   loading = signal(false);
   games = signal<Game[]>([]);
-  categories = signal<Category[]>([]); // ✅ signal สำหรับเก็บหมวดหมู่
+  categories = signal<Category[]>([]);
   q = signal('');
 
   showModal = signal(false);
@@ -112,7 +112,6 @@ export class AdminGamesPage {
           releaseDate: r.releaseDate ?? null,
           status: r.status ?? 'ACTIVE',
         }));
-        // ถ้า interface ภายในไฟล์นี้ใช้ชื่อ field ไม่ตรง ก็ map ต่ออีกทีตาม UI
         this.games.set(data as any);
         this.loading.set(false);
       },
@@ -142,7 +141,6 @@ export class AdminGamesPage {
 
   openEdit(g: any) {
     this.editingId.set(g.id);
-    // ถ้าต้องการโหลดข้อมูลเต็มจากเซิร์ฟเวอร์
     this.api.getOneAdmin(g.id).subscribe({
       next: (res: { ok: boolean; data: GameDto }) => {
         const r = res.data;

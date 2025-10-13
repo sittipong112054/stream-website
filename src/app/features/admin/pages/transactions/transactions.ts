@@ -23,18 +23,15 @@ type Tx = {
 export class Transactions {
   private api = inject(AdminTransactionsService);
 
-  // sidebar users
   users = signal<{id:number; username:string; email:string; avatarUrl?:string|null}[]>([]);
   selectedUserId = signal<number | null>(null);
   selectedUser = computed(() => this.users().find(u => u.id === this.selectedUserId()) || null);
 
-  // summary cards
   sumTotalCount = signal(0);
   sumTopup = signal(0);
   sumPurchase = signal(0);
   sumAvg = signal(0);
 
-  // tx list
   loading = signal(false);
   txs = signal<Tx[]>([]);
 
@@ -79,7 +76,6 @@ export class Transactions {
     });
   }
 
-  // สำหรับ format ยอด (ให้ purchase ขึ้น - สีแดง)
   displayAmount(t: Tx) {
     const n = Number(t.amount || 0);
     return t.type === 'PURCHASE' ? -n : n;

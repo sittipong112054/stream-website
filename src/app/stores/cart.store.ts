@@ -17,7 +17,6 @@ export class CartStore {
     const existing = current.find((x) => x.id === item.id);
 
     if (existing) {
-      // เพิ่มจำนวนถ้ามีอยู่แล้ว
       existing.qty += item.qty;
       this.items.set([...current]);
     } else {

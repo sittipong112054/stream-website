@@ -7,7 +7,6 @@
   color: #e6edf3;
   min-height: 100svh;
 
-  /* ----- Sidebar ----- */
   .sidebar {
     @extend .card;
     display: flex;
@@ -74,7 +73,6 @@
     }
   }
 
-  /* ----- Main Panel ----- */
   .main {
     display: flex;
     flex-direction: column;
@@ -89,7 +87,6 @@
       }
     }
 
-    /* --- Stat cards --- */
     .stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -138,7 +135,6 @@
       }
     }
 
-    /* --- Transaction list --- */
     .list {
       @extend .card;
       background: #161d25;
@@ -226,7 +222,6 @@
     }
   }
 
-  /* --- Shared card style --- */
   .card {
     background: #161d25;
     border: 1px solid #243041;
@@ -234,7 +229,6 @@
   }
 }
 
-/* Responsive tweaks */
 @media (max-width: 1024px) {
   .admin-tx {
     grid-template-columns: 1fr;

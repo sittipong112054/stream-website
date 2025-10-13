@@ -61,18 +61,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 40px;                         /* ✅ กำหนดความสูงคงที่ */
+  height: 40px;                       
   background: #1b2430;
   border: 1px solid #2b3646;
   color: #dbe7ff;
   border-radius: 8px;
-  padding: 0 10px;                      /* ✅ เว้นขอบเท่ากันบน-ล่าง */
+  padding: 0 10px;                    
   box-sizing: border-box;
 }
 
 .profile img,
 .avatar {
-  width: 36px;                          /* ✅ ใหญ่ขึ้นพอดีกับความสูง 40px */
+  width: 36px;                         
   height: 36px;
   border-radius: 6px;
   object-fit: cover;
@@ -91,6 +91,7 @@
   font-weight: 700;
   font-size: 13px;
   line-height: 1;
+  color: #76808C; 
 }
 
 .logout {

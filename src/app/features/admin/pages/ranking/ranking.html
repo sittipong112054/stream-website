@@ -1,1 +1,93 @@
-<p>ranking works!</p>
+<div class="page">
+  <div class="controls card">
+    <div class="row">
+      <label
+        >Start
+        <input
+          type="date"
+          [value]="start()"
+          (change)="start.set($any($event.target).value || start()); reload()"
+      /></label>
+      <label
+        >End
+        <input
+          type="date"
+          [value]="end()"
+          (change)="end.set($any($event.target).value || end()); reload()"
+      /></label>
+      <label
+        >Sort
+        <select
+          [value]="sort()"
+          (change)="sort.set($any($event.target).value); reload()"
+        >
+          <option value="qty">By Sales (Qty)</option>
+          <option value="revenue">By Revenue</option>
+        </select>
+      </label>
+      <button class="btn" (click)="setToday()">Today</button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi card">
+      <div class="title">Total Revenue</div>
+      <div class="value yellow">
+        ฿ {{ (kpis()?.totalRevenue || 0) | number:'1.2-2' }}
+      </div>
+      <div class="sub">รายได้ตลอดช่วงเวลา</div>
+    </div>
+    <div class="kpi card">
+      <div class="title">Total Sales</div>
+      <div class="value green">{{ kpis()?.totalSales || 0 | number }}</div>
+      <div class="sub">จำนวนออเดอร์ที่ชำระแล้ว</div>
+    </div>
+    <div class="kpi card">
+      <div class="title">Top Seller</div>
+      <div class="value">#1</div>
+      <div class="sub">{{ kpis()?.topSeller?.title || "—" }}</div>
+    </div>
+    <div class="kpi card">
+      <div class="title">Avg Revenue</div>
+      <div class="value purple">
+        ฿ {{ kpis()?.avgRevenue || 0 | number : "1.2-2" }}
+      </div>
+      <div class="sub">ต่อออเดอร์</div>
+    </div>
+  </div>
+
+  <!-- Top 5 -->
+  <div class="grid">
+    <section class="card left">
+      <h3>
+        Top 5 Games -
+        {{ start() === end() ? "Today" : start() + " ~ " + end() }}
+      </h3>
+      <div class="list">
+        <div class="item" *ngFor="let r of top(); let i = index">
+          <div class="rank">#{{ i + 1 }}</div>
+          <img [src]="r.cover || '/assets/placeholder-wide.jpg'" alt="" />
+          <div class="meta">
+            <div class="title">{{ r.title }}</div>
+            <div class="sub">
+              ฿ {{ r.revenue | number : "1.2-2" }} · {{ r.qty | number }} ชิ้น
+            </div>
+          </div>
+        </div>
+        <div class="empty" *ngIf="!top().length && !loading()">No data</div>
+      </div>
+    </section>
+
+    <section class="card right">
+      <h3>Complete Rankings</h3>
+      <div class="row" *ngFor="let r of top(); let i = index">
+        <div class="rank pill">#{{ i + 1 }}</div>
+        <img [src]="r.cover || '/assets/placeholder-wide.jpg'" />
+        <div class="title">{{ r.title }}</div>
+        <div class="revenue">฿ {{ r.revenue | number : "1.2-2" }}</div>
+        <div class="qty">{{ r.qty | number }} ชิ้น</div>
+      </div>
+    </section>
+  </div>
+</div>

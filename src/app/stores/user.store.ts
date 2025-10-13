@@ -16,22 +16,18 @@ export class UserStore {
     throw new Error('Method not implemented.');
   }
   private _profile$ = new BehaviorSubject<UserProfile | null>(null);
-  /** Observable สำหรับใช้ใน template หรือ subscribe */
   profile$ = this._profile$.asObservable();
 
-  /** ใช้ตอนต้องการอัปเดตเฉพาะบาง field */
   setProfile(next: Partial<UserProfile> | UserProfile) {
     const cur = this._profile$.getValue() ?? {} as UserProfile;
     this._profile$.next({ ...cur, ...next });
   }
 
-  /** ล้างข้อมูล (ตอน logout) */
   clearProfile() {
     this._profile$.next(null);
   }
 
 
-  /** getter สำหรับใช้ใน service */
   getProfile(): UserProfile | null {
     return this._profile$.getValue();
   }

@@ -9,7 +9,7 @@ import { UserStore } from '../../../stores/user.store';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './header.html',
-  styleUrls: ['./header.scss'], // <-- แก้ styleUrls (s)
+  styleUrls: ['./header.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
@@ -17,7 +17,6 @@ export class Header {
   readonly userStore = inject(UserStore);
   constructor(private router: Router) {}
 
-  // default avatar แบบ data URI (ไม่มีวัน 404)
   defaultAvatar = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
     <rect width="160" height="160" rx="16" fill="#eef2ff"/>
@@ -31,8 +30,8 @@ export class Header {
 
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
-    img.onerror = null;                // กันลูป
-    img.src = this.defaultAvatar;      // ใช้ fallback ที่ไม่ 404
+    img.onerror = null;            
+    img.src = this.defaultAvatar;   
   }
 
   logout() {

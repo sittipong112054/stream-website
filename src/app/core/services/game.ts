@@ -1,4 +1,3 @@
-// src/app/core/services/game.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -21,7 +20,6 @@ export interface GameDto {
 export class GameService {
   constructor(private http: HttpClient, private constants: Constants) {}
 
-  // ===== PUBLIC (store/detail) =====
   getAll(): Observable<{ ok: boolean; data: GameDto[] }> {
     return this.http.get<{ ok: boolean; data: GameDto[] }>(
       `${this.constants.API_URL}/games`,
@@ -35,7 +33,6 @@ export class GameService {
     );
   }
 
-  // ===== ADMIN =====
   list(): Observable<{ ok: boolean; data: GameDto[] }> {
     return this.http.get<{ ok: boolean; data: GameDto[] }>(
       `${this.constants.API_URL}/admin/games`,

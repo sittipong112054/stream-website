@@ -5,12 +5,12 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export type CartItem = {
-  itemId: number;   // id แถวในตะกร้า
+  itemId: number; 
   gameId: number;
   title: string;
   cover: string | null;
   price: number;
-  discount?: number; // 0-100
+  discount?: number;
   qty: number;
   platform?: string;
 };
@@ -24,7 +24,6 @@ export class CartService {
   items = signal<CartItem[]>([]);
   coupon = signal<CouponResp | null>(null);
 
-  // ราคา/ยอดรวม
   private itemFinal = (it: CartItem) =>
     it.discount ? +(it.price * (100 - it.discount) / 100).toFixed(2) : it.price;
 
@@ -34,7 +33,6 @@ export class CartService {
   discountTotal = computed(() => this.coupon()?.amount ?? 0);
   total = computed(() => Math.max(0, +(this.subtotal() - this.discountTotal()).toFixed(2)));
 
-  // ---------- API calls ----------
   load() {
     return this.http
       .get<{ ok: boolean; data: CartItem[] }>(`${this.constants.API_URL}/cart`, {
@@ -43,7 +41,6 @@ export class CartService {
       .subscribe(({ data }) => this.items.set(data));
   }
 
-  // ให้ component เป็นคน subscribe เอง (เพื่อ navigate หลังเพิ่มสำเร็จ)
   add(gameId: number, qty = 1): Observable<{ ok: boolean; data: CartItem }> {
     return this.http
       .post<{ ok: boolean; data: CartItem }>(
@@ -74,18 +71,6 @@ export class CartService {
       .subscribe(() => this.items.set(this.items().filter((i) => i.itemId !== itemId)));
   }
 
-  applyCoupon(code: string) {
-    return this.http
-      .post<{ ok: boolean; data: CouponResp }>(
-        `${this.constants.API_URL}/cart/validate-coupon`,
-        { code, subtotal: this.subtotal() },
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: ({ data }) => this.coupon.set(data),
-        error: () => alert('คูปองไม่ถูกต้อง'),
-      });
-  }
 
   removeCoupon() {
     this.coupon.set(null);
@@ -98,9 +83,33 @@ export class CartService {
     };
 
     return this.http.post<{ ok: boolean; orderId: number; status: string; total: number }>(
-      `${this.constants.API_URL}/cart/checkout`, // ✅ แก้ URL ให้ถูก
+      `${this.constants.API_URL}/cart/checkout`,
       payload,
       { withCredentials: true }
     );
   }
+
+applyCoupon(code: string) {
+  return this.http.post<{ ok: boolean; data: CouponResp }>(
+    `${this.constants.API_URL}/cart/validate-coupon`,
+    { code, subtotal: this.subtotal() },
+    { withCredentials: true }
+  ).subscribe({
+    next: ({ data }) => this.coupon.set(data),
+    error: (e) => {
+      const m = e?.error?.code as string;
+      const msg =
+        m === 'EXPIRED'      ? 'คูปองหมดอายุแล้ว'
+      : m === 'NOT_STARTED'  ? 'คูปองยังไม่เริ่มใช้งาน'
+      : m === 'INACTIVE'     ? 'คูปองถูกปิดใช้งาน'
+      : m === 'EXHAUSTED'    ? 'คูปองครบโควตาแล้ว'
+      : m === 'USER_LIMIT'   ? 'คุณใช้คูปองนี้ครบสิทธิ์แล้ว'
+      : m === 'TOO_LOW'      ? 'ยอดสั่งซื้อยังไม่ถึงขั้นต่ำของคูปอง'
+      : 'คูปองไม่ถูกต้อง';
+      alert(msg);
+    },
+  });
+}
+
+
 }

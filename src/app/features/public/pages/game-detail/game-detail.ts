@@ -88,18 +88,25 @@
 // }
 
 // src/app/features/public/pages/game-detail/detail.ts
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, GameDto } from '../../../../core/services/game';
 import { CartService } from '../../../../core/services/cart';
+import { UserService } from '../../../../core/services/user';
 
 type GameDetailModel = {
   id: number;
   title: string;
   gallery: string[];
   cover: string;
-  description: string[];  // แยกบรรทัดแล้ว
+  description: string[]; // แยกบรรทัดแล้ว
   tags: string[];
   developer?: string;
   publisher?: string;
@@ -115,13 +122,15 @@ type GameDetailModel = {
   imports: [CommonModule],
   templateUrl: './game-detail.html',
   styleUrl: './game-detail.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameDetail {
   private route = inject(ActivatedRoute);
   private gameApi = inject(GameService);
-
   private readonly placeholderCover = 'assets/placeholder-wide.jpg';
+  private userApi = inject(UserService);         // ⬅️ เพิ่ม
+  ownedIds = signal<Set<number>>(new Set()); 
+  
 
   game = signal<GameDetailModel>({
     id: 0,
@@ -140,17 +149,32 @@ export class GameDetail {
 
   combinedGallery = computed(() => this.game().gallery ?? []);
   active = signal<string>(this.placeholderCover);
-  setActive(src: string) { this.active.set(src || this.placeholderCover); }
+  setActive(src: string) {
+    this.active.set(src || this.placeholderCover);
+  }
 
   shortDesc = computed(() => this.game().description?.[0] ?? '');
   finalPrice = computed(() => {
     const g = this.game();
     if (!g.discount) return g.price;
-    return +(g.price * (100 - g.discount) / 100).toFixed(2);
+    return +((g.price * (100 - g.discount)) / 100).toFixed(2);
   });
 
-  constructor(    private cart: CartService,
-    private router: Router,) { this.fetch(); }
+  constructor(private cart: CartService, private router: Router) {
+    this.fetch();
+    this.loadOwned();  
+  }
+
+    private loadOwned() {
+    this.userApi.getMyGames().subscribe({
+      next: (res) => {
+        const set = new Set<number>((res.data || []).map(g => Number(g.id)));
+        this.ownedIds.set(set);
+      },
+      error: () => { /* เงียบได้ */ }
+    });
+  }
+  isOwned = (id: number) => this.ownedIds().has(Number(id));
 
   private fetch() {
     const raw = this.route.snapshot.paramMap.get('id');
@@ -165,11 +189,11 @@ export class GameDetail {
         const r: GameDto = res.data;
 
         const cover = r.imageUrl || this.placeholderCover;
-        const gallery = [cover]; // ถ้ามีหลายรูปค่อยต่อเพิ่มภายหลัง
+        const gallery = [cover];
 
         const descLines = (r.description || '')
           .split(/\r?\n/)
-          .map(s => s.trim())
+          .map((s) => s.trim())
           .filter(Boolean);
 
         this.game.set({
@@ -179,9 +203,11 @@ export class GameDetail {
           cover,
           description: descLines,
           tags: r.categoryName ? [r.categoryName] : [],
-          developer: '-',  // ยังไม่มีใน DTO
+          developer: '-', // ยังไม่มีใน DTO
           publisher: '-',
-          releaseDate: r.releaseDate || (r.releasedAt ? String(r.releasedAt).slice(0,10) : ''),
+          releaseDate:
+            r.releaseDate ||
+            (r.releasedAt ? String(r.releasedAt).slice(0, 10) : ''),
           rating: 0,
           price: Number(r.price) || 0,
           discount: undefined,
@@ -191,19 +217,25 @@ export class GameDetail {
       },
       error: (err) => {
         console.error('[game-detail] load error', err);
-      }
+      },
     });
   }
 
 addToCart() {
   const id = this.game().id;
-  this.cart.add(id, 1).subscribe({
-    next: () => this.router.navigate(['/cart']),
-    error: (err) => {
-      console.error('[AddToCart Error]', err);
-      alert('เพิ่มลงตะกร้าไม่สำเร็จ');
-    },
-  });
-}
+   if (!id || this.isOwned(id)) return; 
+
+    this.cart.add(id, 1).subscribe({
+      next: () => this.router.navigate(['/cart']),
+      error: (err) => {
+        console.error('[AddToCart Error]', err);
+        if (err?.status === 409) {
+          alert('คุณมีเกมนี้อยู่ในตะกร้าแล้ว');
+        } else {
+          alert('เพิ่มลงตะกร้าไม่สำเร็จ');
+        }
+      },
+    });
+  }
 
 }

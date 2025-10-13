@@ -12,7 +12,6 @@
       </div>
     </div>
 
-    <!-- ตารางรายการเกม -->
     <table>
       <thead>
         <tr>
@@ -48,7 +47,6 @@
             </span>
           </td>
           <td>
-            <!-- <img src="/assets/date.png" alt="calendar" class="date-icon" /> -->
             {{ g.releaseDate || (g.releasedAt | date : "dd MMM yyyy") }}
           </td>
 
@@ -61,7 +59,6 @@
       </tbody>
     </table>
 
-    <!-- ✅ ย้ายออกมานอก <table> -->
     <div
       class="details-backdrop"
       *ngIf="detailsOpen()"
@@ -140,7 +137,6 @@
     </aside>
   </div>
 
-  <!-- Modal ฟอร์มเพิ่ม/แก้ไข -->
   <div class="modal" *ngIf="showModal()">
     <div class="dialog">
       <h3>{{ editingId() == null ? "Add Game" : "Edit Game" }}</h3>

@@ -1,1 +1,188 @@
-<p>coupons works!</p>
+<div class="page">
+  <div class="head">
+    <h2>Discount Codes ({{ filtered().length }})</h2>
+
+    <div class="tools">
+      <div class="search">
+        <input
+          type="text"
+          placeholder="Search..."
+          [value]="query()"
+          (input)="query.set(($any($event.target).value || '').trim())"
+        />
+        <span class="icon">🔎</span>
+      </div>
+
+      <button class="btn primary" (click)="openCreate()">Create Code</button>
+    </div>
+  </div>
+
+  <div class="table-head">
+    <div>Code Name</div>
+    <div>Type</div>
+    <div>Discount Value</div>
+    <div>Usage</div>
+    <div>Status</div>
+    <div>Release Date</div>
+    <div class="ta-right">Action</div>
+  </div>
+
+  <div class="list">
+    <div class="row card" *ngIf="loading()">Loading...</div>
+    <div class="row card error" *ngIf="error()">{{ error() }}</div>
+
+    <div class="row card" *ngFor="let c of filtered()">
+      <div class="cell code">{{ c.code }}</div>
+
+      <div class="cell type">{{ typeLabel(c) }}</div>
+
+      <div class="cell value">
+        <b [class.is-percent]="c.discount_type === 'PERCENT'">{{
+          valueLabel(c)
+        }}</b>
+      </div>
+
+      <div class="cell usage">
+        <div class="bar">
+          <div class="fill" [style.width.%]="usagePct(c)"></div>
+        </div>
+        <div class="text">{{ usageText(c) }}</div>
+      </div>
+
+      <div class="cell">
+        <ng-container [ngSwitch]="true">
+          <span
+            *ngSwitchCase="c.start_at && today < toDate(c.start_at)"
+            class="pill scheduled"
+            >Scheduled</span
+          >
+
+          <span
+            *ngSwitchCase="c.end_at && today > toDate(c.end_at)"
+            class="pill expired"
+            >Expired</span
+          >
+
+          <span *ngSwitchCase="!c.active" class="pill inactive">Inactive</span>
+
+          <span *ngSwitchDefault class="pill active">Active</span>
+        </ng-container>
+      </div>
+
+      <div class="cell">
+        <span class="date">{{ c.created_at | date : "d MMM y" }}</span>
+      </div>
+
+      <div class="cell ta-right actions">
+        <a class="icon edit" (click)="openEdit(c)" title="Edit">✏️</a>
+        <button class="icon remove" (click)="remove(c)" title="Delete">
+          🗑
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="showCreate()">
+  <div class="modal-backdrop" (click)="closeCreate()"></div>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="title"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-head">
+      <h3 id="title">Create New Discount Code</h3>
+      <button class="icon" title="Close" (click)="closeCreate()">✕</button>
+    </div>
+
+    <p class="muted">
+      Create a new promotional discount code for your customers.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submitCreate()">
+      <label class="field">
+        <span>Code Name *</span>
+        <input formControlName="code" placeholder="SUMMER20" required />
+      </label>
+
+      <div class="row2">
+        <label class="field">
+          <span>Discount Type *</span>
+          <select formControlName="discount_type">
+            <option value="PERCENT">Percentage (%)</option>
+            <option value="AMOUNT">Fixed Amount</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Discount Value *</span>
+          <div class="value-wrap">
+            <input
+              type="number"
+              formControlName="discount_value"
+              min="1"
+              required
+            />
+            <span class="unit">{{
+              form.value.discount_type === "PERCENT" ? "%" : "฿"
+            }}</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="row2">
+        <label class="field">
+          <span>Usage Limit *</span>
+          <input type="number" formControlName="max_uses" min="0" />
+        </label>
+
+        <label class="field">
+          <span>Per User Limit *</span>
+          <input
+            type="number"
+            formControlName="per_user_limit"
+            min="1"
+            required
+          />
+        </label>
+      </div>
+
+      <div class="row2">
+        <label class="field">
+          <span>Start At</span>
+          <input type="datetime-local" formControlName="start_at" />
+        </label>
+        <label class="field">
+          <span>End At</span>
+          <input type="datetime-local" formControlName="end_at" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Description</span>
+        <textarea rows="3" formControlName="description"></textarea>
+      </label>
+
+      <div class="toggle">
+        <input id="active" type="checkbox" formControlName="active" />
+        <label for="active">Code is active</label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" (click)="closeCreate()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn primary"
+          [disabled]="form.invalid || saving()"
+        >
+          {{ saving() ? "Creating…" : "Create Code" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-container>

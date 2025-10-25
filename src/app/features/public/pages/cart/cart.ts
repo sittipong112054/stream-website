@@ -23,6 +23,15 @@ export class CartPage {
   discount = computed(() => this.cart.discountTotal());
   total = computed(() => this.cart.total());
 
+    finalUnit(it: CartItem) {
+    const unit = it.discount ? (it.price * (100 - it.discount)) / 100 : it.price;
+    return +unit.toFixed(2);
+  }
+  
+    lineTotal(it: CartItem) {
+    return +(this.finalUnit(it) * it.qty).toFixed(2);
+  }
+
   ngOnInit() { this.cart.load(); }
 
   inc(it: CartItem) { this.cart.setQty(it.itemId, it.qty + 1); }

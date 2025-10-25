@@ -4,7 +4,7 @@
     </div>
 
     <section class="grid">
-        <article class="card" *ngFor="let g of filtered()" [routerLink]="['/games', g.id]">
+        <article class="card" *ngFor="let g of filtered()" [routerLink]="['/games', g.id]" [state]="{ rank: g.rank }">
             <div class="thumb">
                 <img [src]="g.cover" [alt]="g.title" />
             </div>

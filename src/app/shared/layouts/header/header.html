@@ -6,14 +6,12 @@
     </div>
 
     <ng-container *ngIf="auth.loggedIn$ | async as loggedIn">
-      <!-- เมนู USER -->
       <nav *ngIf="loggedIn && (auth.role$ | async) === 'USER'" class="nav">
         <a routerLink="/store" routerLinkActive="active">STORE</a>
         <a routerLink="/user/library" routerLinkActive="active">LIBRARY</a>
         <a routerLink="/user/profile" routerLinkActive="active">NAMEPROFILE</a>
       </nav>
 
-      <!-- เมนู ADMIN -->
       <nav *ngIf="loggedIn && (auth.role$ | async) === 'ADMIN'" class="nav">
         <a routerLink="/admin" routerLinkActive="active">DASHBOARD</a>
         <a routerLink="/admin/games" routerLinkActive="active">GAMES</a>
@@ -24,7 +22,6 @@
         <a routerLink="/admin/ranking" routerLinkActive="active">RANKING</a>
       </nav>
 
-      <!-- โปรไฟล์ขวาบน -->
       <div class="profile" *ngIf="loggedIn">
         <ng-container *ngIf="userStore.profile$ | async as p">
           <img
@@ -45,7 +42,6 @@
       </div>
     </ng-container>
 
-    <!-- ยังไม่ล็อกอิน -->
     <nav *ngIf="!(auth.loggedIn$ | async)" class="nav">
       <a routerLink="/store" routerLinkActive="active">STORE</a>
       <a routerLink="/login">LOGIN</a>

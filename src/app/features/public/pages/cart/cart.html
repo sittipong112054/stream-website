@@ -79,6 +79,14 @@
           </div>
 
           <div class="lines">
+            <!-- แสดงทุกรายการในตะกร้า -->
+            <div class="line item" *ngFor="let it of items()">
+              <span>{{ it.title }} × {{ it.qty }}</span>
+              <b>฿ {{ lineTotal(it) | number : "1.2-2" }}</b>
+            </div>
+
+            <hr />
+
             <div class="line">
               <span>ราคารวมก่อนลด</span>
               <b>฿ {{ subtotal() | number : "1.2-2" }}</b>

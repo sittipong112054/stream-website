@@ -159,4 +159,50 @@ html, body {
         border: 1px dashed #2a2f36;
         border-radius: 10px;
     }
+    .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.2);
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.pill-rank {
+  background: #fde68a;   /* เหลืองอ่อน */
+  color: #111827;
+  border-color: #f59e0b;
+}
+
+.pill-price {
+  background: #34d399;   /* เขียว */
+  color: #0b1220;
+  border-color: #059669;
+}
+
+/* จัด layout ให้เหมือนรูป */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .genre {
+      font-weight: 700;
+      opacity: .9;
+      text-transform: capitalize;
+    }
+  }
+
+  .right { display: flex; align-items: center; }
+}
 }

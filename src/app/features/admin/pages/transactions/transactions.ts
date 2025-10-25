@@ -1,4 +1,3 @@
-// src/app/features/admin/pages/transactions/transactions.ts
 import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { AdminTransactionsService } from '../../../../core/services/admin-transactions';

@@ -100,13 +100,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, GameDto } from '../../../../core/services/game';
 import { CartService } from '../../../../core/services/cart';
 import { UserService } from '../../../../core/services/user';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Constants } from '../../../../config/constants';
 
 type GameDetailModel = {
   id: number;
   title: string;
   gallery: string[];
   cover: string;
-  description: string[]; // แยกบรรทัดแล้ว
+  description: string[];
   tags: string[];
   developer?: string;
   publisher?: string;
@@ -128,9 +130,11 @@ export class GameDetail {
   private route = inject(ActivatedRoute);
   private gameApi = inject(GameService);
   private readonly placeholderCover = 'assets/placeholder-wide.jpg';
-  private userApi = inject(UserService);         // ⬅️ เพิ่ม
+  private userApi = inject(UserService);
+  private http = inject(HttpClient);
+  private c = inject(Constants);
   ownedIds = signal<Set<number>>(new Set()); 
-  
+  rank = signal<number | null>(null);
 
   game = signal<GameDetailModel>({
     id: 0,
@@ -160,10 +164,24 @@ export class GameDetail {
     return +((g.price * (100 - g.discount)) / 100).toFixed(2);
   });
 
-  constructor(private cart: CartService, private router: Router) {
-    this.fetch();
-    this.loadOwned();  
+constructor(private cart: CartService, private router: Router) {
+  // 1) ลองอ่านจาก navigation state
+  const nav = this.router.getCurrentNavigation();
+  const navState = (nav?.extras?.state as { rank?: number } | undefined)?.rank;
+
+  // 2) fallback: ถ้าเปิดหน้าโดยตรง/รีเฟรช ให้ใช้ history.state
+  const histState = (history.state?.rank as number | undefined);
+
+  const r = Number(navState ?? histState);
+  if (Number.isFinite(r) && r > 0 && r <= 5) {
+    this.rank.set(r);
+  } else {
+    this.rank.set(null);
   }
+
+  this.fetch();
+  this.loadOwned();
+}
 
     private loadOwned() {
     this.userApi.getMyGames().subscribe({
@@ -203,7 +221,7 @@ export class GameDetail {
           cover,
           description: descLines,
           tags: r.categoryName ? [r.categoryName] : [],
-          developer: '-', // ยังไม่มีใน DTO
+          developer: '-',
           publisher: '-',
           releaseDate:
             r.releaseDate ||
@@ -220,6 +238,8 @@ export class GameDetail {
       },
     });
   }
+
+
 
 addToCart() {
   const id = this.game().id;

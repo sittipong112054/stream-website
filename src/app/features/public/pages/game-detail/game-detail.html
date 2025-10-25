@@ -37,10 +37,15 @@
         </div>
         <div class="row">
           <span class="label">Audience</span>
-          <span class="pill pill-rating">{{
-            game().rating | number : "1.0-1"
-          }}</span>
+          <span class="pill pill-rating" *ngIf="game().rating > 0">
+            {{ game().rating | number : "1.0-1" }}
+          </span>
+
+          <span *ngIf="!!rank() && rank()! <= 5" class="pill pill-rank">
+            #{{ rank() }}
+          </span>
         </div>
+
         <div class="row">
           <span class="label">Tags</span>
           <span class="tags">

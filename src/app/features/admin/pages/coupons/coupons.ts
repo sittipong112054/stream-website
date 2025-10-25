@@ -10,7 +10,6 @@ import {
   DiscountCodesService,
 } from '../../../../core/services/copons';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
@@ -147,7 +146,6 @@ export class Coupons {
   submitCreate() {
     if (this.form.invalid || this.saving()) return;
 
-
     // กันเปอร์เซ็นต์ 1–100
     if (this.form.value.discount_type === 'PERCENT') {
       const v = Number(this.form.value.discount_value ?? 0);
@@ -160,42 +158,29 @@ export class Coupons {
     this.saving.set(true);
     const v = this.form.getRawValue();
     const payload = {
-    code: (v.code ?? '').trim(),
-    description: v.description ?? null,
-    discount_type: v.discount_type!,
-    discount_value: Number(v.discount_value),
-    max_uses: v.max_uses == null ? null : Math.floor(Number(v.max_uses)),
-    per_user_limit: Math.max(1, Math.floor(Number(v.per_user_limit ?? 1))),
-    active: !!v.active,
-    start_at: v.start_at ?? null,
-    end_at: v.end_at ?? null,
+      code: (v.code ?? '').trim(),
+      description: v.description ?? null,
+      discount_type: v.discount_type!,
+      discount_value: Number(v.discount_value),
+      max_uses: v.max_uses == null ? null : Math.floor(Number(v.max_uses)),
+      per_user_limit: Math.max(1, Math.floor(Number(v.per_user_limit ?? 1))),
+      active: !!v.active,
+      start_at: v.start_at ?? null,
+      end_at: v.end_at ?? null,
     };
 
     const id = this.editingId();
-
     const req$ = id ? this.api.update(id, payload) : this.api.create(payload);
 
     req$.subscribe({
       next: () => {
-        this.closeCreate();
-        this.load();
-      },
-      error: (e) => {
-        alert(e?.error?.error || 'Save failed');
-        this.saving.set(false);
-      },
-    });
-
-    this.saving.set(true);
-    this.api.create(payload).subscribe({
-      next: () => {
         this.saving.set(false);
         this.closeCreate();
         this.load();
       },
       error: (e) => {
         this.saving.set(false);
-        alert(e?.error?.error || 'Create failed');
+        alert(e?.error?.error || (id ? 'Update failed' : 'Create failed'));
       },
     });
   }
@@ -214,8 +199,7 @@ export class Coupons {
 
   today = new Date();
 
-toDate(s: string | null | undefined): Date {
-  return s ? new Date(s) : new Date(0);
-}
-
+  toDate(s: string | null | undefined): Date {
+    return s ? new Date(s) : new Date(0);
+  }
 }

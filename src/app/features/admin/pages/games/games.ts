@@ -56,11 +56,15 @@ export class AdminGamesPage {
   detailsLoading = signal(false);
   selected = signal<Game | null>(null);
 
-  filtered = computed(() => {
-    const term = this.q().toLowerCase().trim();
-    if (!term) return this.games();
-    return this.games().filter((g) => g.title.toLowerCase().includes(term));
-  });
+filtered = computed(() => {
+  const term = this.q().toLowerCase().trim();
+  if (!term) return this.games();
+  return this.games().filter((g) =>
+    g.title.toLowerCase().includes(term) ||
+    (g.categoryName?.toLowerCase().includes(term) ?? false)
+  );
+});
+
 
   openDetails(id: number) {
     this.detailsOpen.set(true);

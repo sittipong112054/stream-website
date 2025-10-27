@@ -5,22 +5,24 @@
       <span>STREAM</span>
     </div>
 
-    <ng-container *ngIf="auth.loggedIn$ | async as loggedIn">
+  <!-- ✅ แสดงเฉพาะเมื่อรู้สถานะล็อกอินแล้ว -->
+    <ng-container *ngIf="(auth.loggedIn$ | async) as loggedIn">
+      <!-- USER menu -->
       <nav *ngIf="loggedIn && (auth.role$ | async) === 'USER'" class="nav">
         <a routerLink="/store" routerLinkActive="active">STORE</a>
         <a routerLink="/user/library" routerLinkActive="active">LIBRARY</a>
-        <a routerLink="/user/profile" routerLinkActive="active">NAMEPROFILE</a>
+        <a routerLink="/user/profile" routerLinkActive="active">PROFILE</a>
       </nav>
 
+      <!-- ADMIN menu -->
       <nav *ngIf="loggedIn && (auth.role$ | async) === 'ADMIN'" class="nav">
         <a routerLink="/admin/games" routerLinkActive="active">GAMES</a>
         <a routerLink="/admin/coupons" routerLinkActive="active">COUPONS</a>
-        <a routerLink="/admin/transactions" routerLinkActive="active"
-          >TRANSACTIONS</a
-        >
+        <a routerLink="/admin/transactions" routerLinkActive="active">TRANSACTIONS</a>
         <a routerLink="/admin/ranking" routerLinkActive="active">RANKING</a>
       </nav>
 
+      <!-- PROFILE (ทุก role) -->
       <div class="profile" *ngIf="loggedIn">
         <ng-container *ngIf="userStore.profile$ | async as p">
           <img
@@ -30,21 +32,19 @@
             alt="avatar"
           />
           <div class="profile-meta">
-            <span class="name">{{ p.displayName || "NameProfile" }}</span>
+            <span class="name">{{ p.displayName || 'NameProfile' }}</span>
             &nbsp;
-            <span class="wallet"
-              >{{ p.walletBalance | number : "1.0-0" }}฿</span
-            >
+            <span class="wallet">{{ p.walletBalance | number: '1.0-0' }}฿</span>
           </div>
           <button class="logout" (click)="logout()">ออก</button>
         </ng-container>
       </div>
-    </ng-container>
 
     <nav *ngIf="!(auth.loggedIn$ | async)" class="nav">
       <a routerLink="/store" routerLinkActive="active">STORE</a>
       <a routerLink="/login">LOGIN</a>
       <a routerLink="/register">REGISTER</a>
     </nav>
+    </ng-container>
   </div>
 </header>

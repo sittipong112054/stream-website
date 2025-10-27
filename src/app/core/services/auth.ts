@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap, catchError, of } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap, catchError, of, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { UserStore, UserProfile } from '../../stores/user.store';
 import { Constants } from '../../config/constants';
@@ -8,17 +8,14 @@ export type Role = 'USER' | 'ADMIN';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  topup(amount: number): Observable<unknown> {
-    throw new Error('Method not implemented.');
-  }
-  getMyTransactions() {
-    throw new Error('Method not implemented.');
-  }
   private ROLE_KEY = 'auth_role';
+  private _sessionLoaded = false;
 
-  // ให้ค่าเริ่มต้น = ยังไม่รู้ (false/null) แล้วค่อยอัปเดตจาก me$()
-  loggedIn$ = new BehaviorSubject<boolean>(false);
-  role$ = new BehaviorSubject<Role | null>(null);
+  // ✅ เริ่มต้นเป็น null = ยังไม่รู้สถานะ (จะไม่กะพริบ)
+  loggedIn$ = new BehaviorSubject<boolean | null>(null);
+  role$ = new BehaviorSubject<Role | null>(
+    (localStorage.getItem(this.ROLE_KEY) as Role) || null
+  );
 
   constructor(
     private http: HttpClient,
@@ -26,6 +23,7 @@ export class AuthService {
     private constants: Constants
   ) {}
 
+  // ----------------- Register -----------------
   registerWithAvatar$(payload: {
     username: string;
     email: string;
@@ -42,14 +40,8 @@ export class AuthService {
       withCredentials: true,
     });
   }
-  isLoggedIn(): boolean {
-    return this.loggedIn$.getValue();
-  }
 
-  role(): Role | null {
-    return this.role$.getValue();
-  }
-
+  // ----------------- Login -----------------
   login$(usernameOrEmail: string, password: string) {
     return this.http
       .post<any>(
@@ -62,21 +54,18 @@ export class AuthService {
           const user = res?.user;
           this.loggedIn$.next(true);
           this.role$.next(user?.role ?? null);
+          localStorage.setItem(this.ROLE_KEY, user?.role ?? '');
         }),
         map(() => true)
       );
   }
 
+  // ----------------- Logout -----------------
   logout$() {
     return this.http
-      .post(
-        `${this.constants.API_URL}/auth/logout`,
-        {}, // ❌ ไม่ต้องส่ง token
-        { withCredentials: true }
-      )
+      .post(`${this.constants.API_URL}/auth/logout`, {}, { withCredentials: true })
       .pipe(
         tap(() => {
-          // ❌ ไม่ต้องยุ่ง localStorage token แล้ว
           localStorage.removeItem(this.ROLE_KEY);
           this.loggedIn$.next(false);
           this.role$.next(null);
@@ -85,6 +74,7 @@ export class AuthService {
       );
   }
 
+  // ----------------- Me -----------------
   me$() {
     return this.http
       .get<any>(`${this.constants.API_URL}/auth/me`, { withCredentials: true })
@@ -100,25 +90,34 @@ export class AuthService {
           } as UserProfile;
         }),
         tap((profile) => {
-          // อัปเดต store + สถานะ auth
-          this.userStore.setProfile(profile as any);
-          const ok = !!profile;
-          this.loggedIn$.next(ok);
-          // ถ้า response /me ไม่มี role (ปกติมี) ก็ไม่แก้ role$
-          if (ok) {
-            // เลือก role จาก store เดิมหรือจาก /me (ถ้าคุณส่งมา)
-            // this.role$.next((res.user.role as Role) ?? this.role$.value);
-          } else {
-            this.role$.next(null);
-          }
+          this.userStore.setProfile(profile);
+          this.loggedIn$.next(!!profile);
         }),
-        catchError((err) => {
-          // ไม่มี session หรือ 401
-          this.loggedIn$.next(false);
-          this.role$.next(null);
+        catchError(() => {
           this.userStore.setProfile(null as any);
+          this.loggedIn$.next(false);
           return of(null);
         })
       );
+  }
+
+  // ----------------- Helper -----------------
+  isLoggedIn(): boolean {
+    return this.loggedIn$.getValue() === true;
+  }
+
+  role(): Role | null {
+    return this.role$.getValue();
+  }
+
+  // ✅ เรียกจาก APP_INITIALIZER หรือ Guards
+  ensureSession$() {
+    if (this._sessionLoaded) return of(true);
+    return this.me$().pipe(
+      take(1),
+      tap(() => (this._sessionLoaded = true)),
+      map(() => true),
+      catchError(() => of(true))
+    );
   }
 }

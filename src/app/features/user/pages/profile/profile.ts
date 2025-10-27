@@ -6,6 +6,7 @@ import { UserProfile, UserStore } from '../../../../stores/user.store';
 import { firstValueFrom, Observable } from 'rxjs';
 import { UserService } from '../../../../core/services/user';
 import { AuthService } from '../../../../core/services/auth';
+import { Constants } from '../../../../config/constants';
 
 type TxType = 'TOPUP' | 'BUY';
 
@@ -39,68 +40,81 @@ export class ProfilePage {
   public user = inject(UserStore);
   public auth = inject(AuthService);
   public router = inject(Router);
-  private userApi: UserService = inject(UserService); 
-
+  private userApi: UserService = inject(UserService);
+  private constants = inject(Constants);
 
   public profile$: Observable<UserProfile | null> = this.user.profile$;
-  avatarUrl = computed(() => this.user.getProfile()?.avatarUrl ?? '/assets/sample/avatar-1.jpg');
+
+  /** helpers สำหรับประกอบ URL */
+  private isAbs(u: string) { return /^https?:\/\//i.test(u); }
+  private fixLocal(u: string) {
+    const m = u.match(/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\/(.+)$/i);
+    if (m) return `${this.constants.API_URL}/${m[1].replace(/^\/+/, '')}`;
+    return u;
+  }
+  private withBase(u?: string | null) {
+    if (!u) return null;
+    if (this.isAbs(u)) return this.fixLocal(u);
+    return `${this.constants.API_URL}/${u.replace(/^\/+/, '')}`;
+  }
+
+  avatarUrl = computed(() =>
+    this.withBase(this.user.getProfile()?.avatarUrl ?? '') ||
+    '/assets/sample/avatar-1.jpg'
+  );
+
   displayName = computed(() => this.user.getProfile()?.displayName ?? '—');
   emailText   = computed(() => this.user.getProfile()?.email ?? '—');
-  
- balance = computed<number>(() => this.user.getProfile()?.walletBalance ?? 0);
-
+  balance     = computed<number>(() => this.user.getProfile()?.walletBalance ?? 0);
 
   quickAdd = [100, 200, 500];
   customAdd = signal<number | null>(null);
   transactions = signal<Tx[]>([]);
   purchases = signal<PurchaseItem[]>([]);
-
-games = signal<GameItem[]>([]);
-
+  games = signal<GameItem[]>([]);
 
   ngOnInit() {
-  this.userApi.getMyTransactions().subscribe({
-    next: (res) => {
-const mapped: Tx[] = (res.data || []).map((r: any) => {
-  const type = String(r.type).toUpperCase();
-  const isBuy = type === 'BUY' || type === 'PURCHASE';
-  const title = isBuy
-        return {
-          id: String(r.id),
-          type: r.type,
-          title: isBuy
-            ? `Buy "${r.title || 'Unknown Game'}"`
-            : (r.title || 'Add Funds'),
-          amount: Number(r.amount) * (isBuy ? -1 : 1),
-          at: new Date(r.created_at).toLocaleDateString('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
-          }),
-        };
-      });
-      this.transactions.set(mapped.slice(0, 10));
-    },
-    error: (err) => {
-      console.warn('⚠️ โหลดประวัติธุรกรรมไม่สำเร็จ', err);
-    },
-  });
+    // Transactions
+    this.userApi.getMyTransactions().subscribe({
+      next: (res) => {
+        const mapped: Tx[] = (res.data || []).map((r: any) => {
+          const typeRaw = String(r.type ?? '').toUpperCase();
+          const isBuy = typeRaw === 'BUY' || typeRaw === 'PURCHASE';
+          const at = new Date(r.created_at ?? r.at ?? Date.now()).toLocaleDateString('en-US', {
+            month: 'numeric', day: 'numeric', year: 'numeric',
+          });
+          return {
+            id: String(r.id),
+            type: (isBuy ? 'BUY' : 'TOPUP') as TxType,
+            title: isBuy ? `Buy "${r.title || 'Unknown Game'}"` : (r.title || 'Add Funds'),
+            amount: Number(r.amount ?? 0) * (isBuy ? -1 : 1),
+            at,
+          };
+        });
+        this.transactions.set(mapped.slice(0, 10));
+      },
+      error: (err) => {
+        console.warn('⚠️ โหลดประวัติธุรกรรมไม่สำเร็จ', err);
+      },
+    });
 
-  this.userApi.getMyGames().subscribe({
-    next: (res) => {
-      const list: GameItem[] = (res.data || []).map((g: any) => ({
-        id: g.id,
-        title: g.title,
-        cover: g.cover || '/assets/placeholder-wide.jpg',
-      }));
-      this.games.set(list);
-    },
-    error: (err) => {
-      console.warn('⚠️ โหลด My Games ไม่สำเร็จ', err);
-    },
-  });
-}
-
+    // My Games
+    this.userApi.getMyGames().subscribe({
+      next: (res) => {
+        const list: GameItem[] = (res.data || []).map((g: any) => ({
+          id: String(g.id),
+          title: g.title,
+          cover:
+            this.withBase(g.cover ?? g.image ?? g.imageUrl ?? g.image_path ?? g.cover_path) ||
+            '/assets/placeholder-wide.jpg',
+        }));
+        this.games.set(list);
+      },
+      error: (err) => {
+        console.warn('⚠️ โหลด My Games ไม่สำเร็จ', err);
+      },
+    });
+  }
 
   onCustomAddChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -126,7 +140,6 @@ const mapped: Tx[] = (res.data || []).map((r: any) => {
         },
         ...list,
       ]);
-
       this.customAdd.set(null);
     } catch (e) {
       alert('เติมเงินไม่สำเร็จ');

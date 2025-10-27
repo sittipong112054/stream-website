@@ -14,17 +14,11 @@ export class AuthService {
   getMyTransactions() {
     throw new Error('Method not implemented.');
   }
-  private TOKEN_KEY = 'auth_token';
   private ROLE_KEY = 'auth_role';
 
-
-
-  loggedIn$ = new BehaviorSubject<boolean>(
-    !!localStorage.getItem(this.TOKEN_KEY)
-  );
-  role$ = new BehaviorSubject<Role | null>(
-    (localStorage.getItem(this.ROLE_KEY) as Role) || null
-  );
+  // ให้ค่าเริ่มต้น = ยังไม่รู้ (false/null) แล้วค่อยอัปเดตจาก me$()
+  loggedIn$ = new BehaviorSubject<boolean>(false);
+  role$ = new BehaviorSubject<Role | null>(null);
 
   constructor(
     private http: HttpClient,
@@ -44,10 +38,8 @@ export class AuthService {
     fd.append('password', payload.password);
     if (payload.avatar) fd.append('avatar', payload.avatar);
 
-
     return this.http.post(`${this.constants.API_URL}/auth/register`, fd, {
       withCredentials: true,
-      
     });
   }
   isLoggedIn(): boolean {
@@ -67,23 +59,24 @@ export class AuthService {
       )
       .pipe(
         tap((res) => {
-          const { token, user } = res;
-          localStorage.setItem(this.TOKEN_KEY, token);
-          localStorage.setItem(this.ROLE_KEY, user.role);
+          const user = res?.user;
           this.loggedIn$.next(true);
-          this.role$.next(user.role);
+          this.role$.next(user?.role ?? null);
         }),
         map(() => true)
       );
   }
 
   logout$() {
-    const token = localStorage.getItem(this.TOKEN_KEY);
     return this.http
-      .post(`${this.constants.API_URL}/auth/logout`, { token }, { withCredentials: true })
+      .post(
+        `${this.constants.API_URL}/auth/logout`,
+        {}, // ❌ ไม่ต้องส่ง token
+        { withCredentials: true }
+      )
       .pipe(
         tap(() => {
-          localStorage.removeItem(this.TOKEN_KEY);
+          // ❌ ไม่ต้องยุ่ง localStorage token แล้ว
           localStorage.removeItem(this.ROLE_KEY);
           this.loggedIn$.next(false);
           this.role$.next(null);
@@ -91,11 +84,11 @@ export class AuthService {
         })
       );
   }
+
   me$() {
     return this.http
       .get<any>(`${this.constants.API_URL}/auth/me`, { withCredentials: true })
       .pipe(
-        
         map((res) => {
           const u = res?.user ?? {};
           return {
@@ -104,15 +97,25 @@ export class AuthService {
             email: u.email,
             walletBalance: u.wallet_balance ?? 0,
             avatarUrl: u.avatarUrl ?? null,
-          }as UserProfile;
+          } as UserProfile;
         }),
-        tap((profile) => this.userStore.setProfile(profile)),
         tap((profile) => {
-          console.log('[me$] profile loaded', profile);
-          this.userStore.setProfile(profile);
+          // อัปเดต store + สถานะ auth
+          this.userStore.setProfile(profile as any);
+          const ok = !!profile;
+          this.loggedIn$.next(ok);
+          // ถ้า response /me ไม่มี role (ปกติมี) ก็ไม่แก้ role$
+          if (ok) {
+            // เลือก role จาก store เดิมหรือจาก /me (ถ้าคุณส่งมา)
+            // this.role$.next((res.user.role as Role) ?? this.role$.value);
+          } else {
+            this.role$.next(null);
+          }
         }),
-
-        catchError(() => {
+        catchError((err) => {
+          // ไม่มี session หรือ 401
+          this.loggedIn$.next(false);
+          this.role$.next(null);
           this.userStore.setProfile(null as any);
           return of(null);
         })

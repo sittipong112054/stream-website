@@ -4,5 +4,5 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class Constants {
-  public readonly API_URL: string = 'http://localhost:3002';
+  public readonly API_URL: string = 'https://server-1d8o.onrender.com';
 }

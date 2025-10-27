@@ -64,8 +64,7 @@ export const routes: Routes = [
         canActivateChild: [authGuard],
         data: { roles: ['ADMIN'] },
         children: [
-          { path: '', component: Dashboard },
-          { path: 'games', component: AdminGamesPage },
+          { path: '', component: AdminGamesPage },
           { path: 'coupons', component: Coupons },
           { path: 'transactions', component: Transactions },
           { path: 'ranking', component: Ranking },

@@ -13,7 +13,6 @@
       </nav>
 
       <nav *ngIf="loggedIn && (auth.role$ | async) === 'ADMIN'" class="nav">
-        <a routerLink="/admin" routerLinkActive="active">DASHBOARD</a>
         <a routerLink="/admin/games" routerLinkActive="active">GAMES</a>
         <a routerLink="/admin/coupons" routerLinkActive="active">COUPONS</a>
         <a routerLink="/admin/transactions" routerLinkActive="active"

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Constants } from '../../config/constants';
 
 export interface GameDto {
@@ -9,10 +9,10 @@ export interface GameDto {
   price: number;
   categoryId: number;
   categoryName?: string | null;
-  imageUrl?: string | null;
+  imageUrl?: string | null;         // ใช้ field นี้ใน template แล้ว
   description?: string | null;
-  releasedAt?: string | null; 
-  releaseDate?: string | null;  
+  releasedAt?: string | null;
+  releaseDate?: string | null;
   status?: 'ACTIVE' | 'INACTIVE';
 }
 
@@ -20,31 +20,94 @@ export interface GameDto {
 export class GameService {
   constructor(private http: HttpClient, private constants: Constants) {}
 
+  /** ---------- Helpers ---------- */
+  private isAbsolute(url: string) {
+    return /^https?:\/\//i.test(url);
+  }
+
+  private withBase(path?: string | null): string | null {
+    if (!path) return null;
+    const clean = path.replace(/^\/+/, ''); // ตัด / นำหน้าออกกัน // ซ้อน
+    if (this.isAbsolute(path)) return path; // กันกรณี backend ส่งมาเป็น URL เต็มแล้ว
+    return `${this.constants.API_URL}/${clean}`;
+  }
+
+  private normalize(g: any): GameDto {
+    // รองรับชื่อฟิลด์หลายแบบจาก backend (image / image_path / imageUrl)
+    const imgPath =
+      g.imageUrl ??
+      g.image_path ??
+      g.image ??
+      g.cover_path ??
+      null;
+
+    return {
+      id: g.id,
+      title: g.title,
+      price: Number(g.price),
+      categoryId: g.categoryId ?? g.category_id,
+      categoryName: g.categoryName ?? g.category_name ?? null,
+      imageUrl: this.withBase(imgPath),
+      description: g.description ?? null,
+      releasedAt: g.releasedAt ?? g.releaseDate ?? g.released_at ?? null,
+      releaseDate: g.releaseDate ?? null,
+      status: g.status ?? 'ACTIVE',
+    };
+  }
+
+  /** ---------- Public APIs ---------- */
+
   getAll(): Observable<{ ok: boolean; data: GameDto[] }> {
-    return this.http.get<{ ok: boolean; data: GameDto[] }>(
-      `${this.constants.API_URL}/games`,
-      { withCredentials: true }
-    );
+    return this.http
+      .get<{ ok: boolean; data: any[] }>(`${this.constants.API_URL}/games`, {
+        withCredentials: true,
+      })
+      .pipe(
+        map((res) => ({
+          ok: res.ok,
+          data: res.data.map((g) => this.normalize(g)),
+        }))
+      );
   }
 
   getById(id: number): Observable<{ ok: boolean; data: GameDto }> {
-    return this.http.get<{ ok: boolean; data: GameDto }>(
-      `${this.constants.API_URL}/games/${id}`
-    );
+    return this.http
+      .get<{ ok: boolean; data: any }>(`${this.constants.API_URL}/games/${id}`)
+      .pipe(
+        map((res) => ({
+          ok: res.ok,
+          data: this.normalize(res.data),
+        }))
+      );
   }
 
+  // -------- admin --------
   list(): Observable<{ ok: boolean; data: GameDto[] }> {
-    return this.http.get<{ ok: boolean; data: GameDto[] }>(
-      `${this.constants.API_URL}/admin/games`,
-      { withCredentials: true }
-    );
+    return this.http
+      .get<{ ok: boolean; data: any[] }>(
+        `${this.constants.API_URL}/admin/games`,
+        { withCredentials: true }
+      )
+      .pipe(
+        map((res) => ({
+          ok: res.ok,
+          data: res.data.map((g) => this.normalize(g)),
+        }))
+      );
   }
 
   getOneAdmin(id: number): Observable<{ ok: boolean; data: GameDto }> {
-    return this.http.get<{ ok: boolean; data: GameDto }>(
-      `${this.constants.API_URL}/admin/games/${id}`,
-      { withCredentials: true }
-    );
+    return this.http
+      .get<{ ok: boolean; data: any }>(
+        `${this.constants.API_URL}/admin/games/${id}`,
+        { withCredentials: true }
+      )
+      .pipe(
+        map((res) => ({
+          ok: res.ok,
+          data: this.normalize(res.data),
+        }))
+      );
   }
 
   create(p: {
@@ -52,7 +115,7 @@ export class GameService {
     price: number;
     categoryId: number;
     description?: string;
-    releasedAt?: string; 
+    releasedAt?: string;
     image?: File | null;
   }): Observable<{ ok: true }> {
     const fd = new FormData();
@@ -60,8 +123,8 @@ export class GameService {
     fd.append('price', String(p.price));
     fd.append('categoryId', String(p.categoryId));
     if (p.description) fd.append('description', p.description);
-    if (p.releasedAt)  fd.append('releasedAt', p.releasedAt);
-    if (p.image)       fd.append('image', p.image);
+    if (p.releasedAt) fd.append('releasedAt', p.releasedAt);
+    if (p.image) fd.append('image', p.image);
 
     return this.http.post<{ ok: true }>(
       `${this.constants.API_URL}/admin/games`,
@@ -86,8 +149,8 @@ export class GameService {
     fd.append('price', String(p.price));
     fd.append('categoryId', String(p.categoryId));
     if (p.description) fd.append('description', p.description);
-    if (p.releasedAt)  fd.append('releasedAt', p.releasedAt);
-    if (p.image)       fd.append('image', p.image);
+    if (p.releasedAt) fd.append('releasedAt', p.releasedAt);
+    if (p.image) fd.append('image', p.image);
 
     return this.http.put<{ ok: true }>(
       `${this.constants.API_URL}/admin/games/${id}`,
